@@ -2,15 +2,28 @@ package com.example.Reminder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
-public class ActivityItem extends AppCompatActivity {
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-    private EditText editTitle, editDescript;
+public class ActivityItem extends AppCompatActivity implements View.OnClickListener,
+        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+
+    private EditText editTitle, editDescript, editDate, editTime;
+    final private Calendar myCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,23 +32,80 @@ public class ActivityItem extends AppCompatActivity {
         final Button btn_app = (Button) findViewById(R.id.button_app);
         editTitle = (EditText)findViewById(R.id.editText_title) ;
         editDescript = (EditText)findViewById(R.id.editTextMultiLine_descr);
-        btn_app.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if( editTitle.length() == 0) {
-                    return ;
-                }
-                ReminderItem item = new ReminderItem();
-                item.setTitle(editTitle.getText().toString());
-                item.setDescription(editDescript.getText().toString());
-             //   item.setDate();
-                Intent intent = new Intent();
-                intent.putExtra(ReminderItem.class.getSimpleName(), item);
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        });
+        editDate = (EditText) findViewById(R.id.editText_date);
+        editTime = (EditText) findViewById(R.id.editTextTime);
+        final Button btn_date = (Button)findViewById(R.id.button_time);
+        final Button btn_cancel = (Button) findViewById(R.id.button_cancel);
+        btn_date.setOnClickListener(this);
+        btn_app.setOnClickListener(this);
+        btn_cancel.setOnClickListener(this);
+    }
+
+    private void updateLabelDate() {
+        String myFormat = "MM/dd/yy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        editDate.setText(sdf.format(myCalendar.getTime()));
+        sdf.applyPattern("hh:mm");
+        editTime.setText(sdf.format(myCalendar.getTime()));
+    }
+
+    private void apple()
+    {
+        if( editTitle.length() == 0) {
+            Toast.makeText(this, "Введите название заголовка", Toast.LENGTH_LONG).show();
+            return ;
+        }
+        if( editDate.length()==0 || editTime.length() == 0){
+            Toast.makeText(this, "Введите дату и время", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ReminderItem item = new ReminderItem();
+        item.setTitle(editTitle.getText().toString());
+        item.setDescription(editDescript.getText().toString());
+        item.setDate(myCalendar.getTime());
+        Intent intent = new Intent();
+        intent.putExtra(ReminderItem.class.getSimpleName(), item);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
 
+    @Override
+    public void onClick(View v)
+    {
+        switch(v.getId()){
+            case R.id.button_app:
+                apple();
+                break;
+            case R.id.button_cancel:
+                finish();
+                break;
+            case R.id.button_time:
+                new DatePickerDialog(this, this, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                break;
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth)
+    {
+        myCalendar.set(Calendar.YEAR, year);
+        myCalendar.set(Calendar.MONTH, month);
+        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        int hour = myCalendar.get(Calendar.HOUR);
+        int minute = myCalendar.get(Calendar.MINUTE);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, this, hour, minute,
+                DateFormat.is24HourFormat(this));
+        timePickerDialog.show();
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+    {
+        myCalendar.set(Calendar.HOUR, hourOfDay);
+        myCalendar.set(Calendar.MINUTE, minute);
+        updateLabelDate();
+    }
 }
