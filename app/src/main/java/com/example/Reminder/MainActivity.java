@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,7 +22,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button btn_add;
+    private ImageButton btn_add;
     private ArrayList<ReminderItem> listReminder = new ArrayList<>();
     private AdapterReminder adp;
 
@@ -31,16 +33,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ListView lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
-        btn_add = (Button) findViewById(R.id.button_add);
+        btn_add = (ImageButton) findViewById(R.id.imageButton_add);
         btn_add.setOnClickListener(this);
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ReminderItem item = listReminder.get(position);
+                Intent intent = new Intent(MainActivity.this, ActivityItem.class);
+                intent.putExtra(ReminderItem.class.getSimpleName(), item);
+                startActivityForResult(intent, position);
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_add:
+            case R.id.imageButton_add:
                 Intent intent = new Intent(this, ActivityItem.class);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent,  listReminder.size());
                 break;
         }
     }
@@ -50,7 +62,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if( resultCode != RESULT_OK || data == null ) return;
         ReminderItem item = (ReminderItem) data.getSerializableExtra(ReminderItem.class.getSimpleName());
-        listReminder.add(item);
+        if( requestCode < listReminder.size() ){
+          //  ReminderItem item_curr = listReminder.get(requestCode);
+            listReminder.set(requestCode, item);
+        }
+        else listReminder.add(item);
         adp.notifyDataSetChanged();
 
     }

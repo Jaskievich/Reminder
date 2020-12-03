@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -34,20 +35,38 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         editDescript = (EditText)findViewById(R.id.editTextMultiLine_descr);
         editDate = (EditText) findViewById(R.id.editText_date);
         editTime = (EditText) findViewById(R.id.editTextTime);
-        final Button btn_date = (Button)findViewById(R.id.button_time);
+        final ImageButton btn_date = (ImageButton)findViewById(R.id.imageButton_date);
         final Button btn_cancel = (Button) findViewById(R.id.button_cancel);
         btn_date.setOnClickListener(this);
         btn_app.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+
+        Bundle arguments = getIntent().getExtras();
+        if (arguments != null) {
+            ReminderItem item = (ReminderItem) arguments.getSerializable(ReminderItem.class.getSimpleName());
+            if (item != null) {
+                editTitle.setText(item.getTitle());
+                updateLabelDate(item.getDate());
+                editDescript.setText(item.getDescription());
+            }
+        }
     }
 
-    private void updateLabelDate() {
+    private void updateLabelDate(Date date) {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        editDate.setText(sdf.format(myCalendar.getTime()));
+        editDate.setText(sdf.format(date));
         sdf.applyPattern("hh:mm");
-        editTime.setText(sdf.format(myCalendar.getTime()));
+        editTime.setText(sdf.format(date));
     }
+
+//    private void updateLabelDate() {
+//        String myFormat = "MM/dd/yy"; //In which you need put here
+//        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+//        editDate.setText(sdf.format(myCalendar.getTime()));
+//        sdf.applyPattern("hh:mm");
+//        editTime.setText(sdf.format(myCalendar.getTime()));
+//    }
 
     private void apple()
     {
@@ -80,7 +99,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             case R.id.button_cancel:
                 finish();
                 break;
-            case R.id.button_time:
+            case R.id.imageButton_date:
                 new DatePickerDialog(this, this, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
@@ -106,6 +125,6 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
     {
         myCalendar.set(Calendar.HOUR, hourOfDay);
         myCalendar.set(Calendar.MINUTE, minute);
-        updateLabelDate();
+        updateLabelDate(myCalendar.getTime());
     }
 }

@@ -37,13 +37,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/button_time"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/imageButton_date"
+            android:layout_width="82dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:foreground="@android:drawable/ic_menu_recent_history"
-            android:text="" />
+            app:srcCompat="@android:drawable/ic_menu_recent_history" />
 
         <EditText
             android:id="@+id/editText_date"
