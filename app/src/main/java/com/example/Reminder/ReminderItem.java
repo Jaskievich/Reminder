@@ -10,6 +10,13 @@ public class ReminderItem implements Serializable
     private Date date;
     private boolean isReady = false;
 
+    ReminderItem(){}
+
+    ReminderItem(String title, String description, Date date){
+        this.title = title;
+        this.description = description;
+        this.date = date;
+    }
 
     public String getTitle() {
         return title;

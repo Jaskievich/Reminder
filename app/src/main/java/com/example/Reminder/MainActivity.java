@@ -16,12 +16,21 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private final static String FILE_NAME = "content.txt";
     private ImageButton btn_add;
     private ArrayList<ReminderItem> listReminder = new ArrayList<>();
     private AdapterReminder adp;
@@ -30,11 +39,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loadFromFile(FILE_NAME);
         ListView lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
         btn_add = (ImageButton) findViewById(R.id.imageButton_add);
         btn_add.setOnClickListener(this);
+        final ImageButton btn_save = (ImageButton)findViewById(R.id.imageButton_save);
+        btn_save.setOnClickListener(this);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -47,12 +59,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    void saveToFile(String name_file)
+    {
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput(name_file, MODE_PRIVATE);
+            ObjectOutputStream obj_out = new ObjectOutputStream(fos);
+            obj_out.writeObject(listReminder);
+            obj_out.close();
+            Toast.makeText(this, "Файл сохранен", Toast.LENGTH_SHORT).show();
+        } catch ( IOException  e) {
+            e.printStackTrace();
+        }
+       finally{
+            try{
+                if(fos!=null) fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    void loadFromFile(String name_file)
+    {
+        FileInputStream fin = null;
+        ObjectInputStream in = null;
+        try {
+            ReminderItem item = null;
+            fin = openFileInput(name_file);
+            in = new ObjectInputStream(fin);
+            listReminder = ((ArrayList<ReminderItem>)in.readObject());
+
+        }
+        catch(IOException | ClassNotFoundException ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+        finally{
+            try{
+                in.close();
+                if(fin!=null)  fin.close();
+            }
+            catch(IOException ex){
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.imageButton_add:
                 Intent intent = new Intent(this, ActivityItem.class);
                 startActivityForResult(intent,  listReminder.size());
+                break;
+            case R.id.imageButton_save:
+                saveToFile(FILE_NAME);
                 break;
         }
     }
