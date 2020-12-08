@@ -31,7 +31,6 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final static String FILE_NAME = "content.txt";
-    private ImageButton btn_add;
     private ArrayList<ReminderItem> listReminder = new ArrayList<>();
     private AdapterReminder adp;
 
@@ -43,10 +42,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ListView lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
-        btn_add = (ImageButton) findViewById(R.id.imageButton_add);
+        final ImageButton btn_add = (ImageButton) findViewById(R.id.imageButton_add);
         btn_add.setOnClickListener(this);
         final ImageButton btn_save = (ImageButton)findViewById(R.id.imageButton_save);
         btn_save.setOnClickListener(this);
+        final ImageButton btn_start = (ImageButton)findViewById(R.id.imageButton_start);
+        btn_start.setOnClickListener(this);
+        final ImageButton btn_stop = (ImageButton)findViewById(R.id.imageButton_stop);
+        btn_stop.setOnClickListener(this);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -105,6 +108,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    void startServiceTask()
+    {
+        Intent intent = new Intent(this, MyService.class);
+        startService(intent);
+    }
+
+    void stopServiceTask()
+    {
+        
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -114,6 +128,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imageButton_save:
                 saveToFile(FILE_NAME);
+                break;
+            case R.id.imageButton_start:
+                startServiceTask();
+                break;
+            case R.id.imageButton_stop:
+                stopServiceTask();
                 break;
         }
     }
