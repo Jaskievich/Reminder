@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
         <service
             android:name=".MyService"
-            android:enabled="false"
+            android:enabled="true"
             android:exported="true"></service>
 
         <activity android:name=".ActivityItem" />
