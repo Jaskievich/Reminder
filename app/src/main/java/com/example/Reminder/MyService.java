@@ -30,6 +30,7 @@ public class MyService extends Service {
 
         @Override
         public void run() {
+
             Toast.makeText(MyService.this, "jhgj", Toast.LENGTH_LONG).show();
         }
     }

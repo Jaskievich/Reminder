@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final static String FILE_NAME = "content.txt";
     private ArrayList<ReminderItem> listReminder = new ArrayList<>();
     private AdapterReminder adp;
+    private ImageButton btn_add, btn_save, btn_start, btn_stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +43,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ListView lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
-        final ImageButton btn_add = (ImageButton) findViewById(R.id.imageButton_add);
+        btn_add = (ImageButton) findViewById(R.id.imageButton_add);
         btn_add.setOnClickListener(this);
-        final ImageButton btn_save = (ImageButton)findViewById(R.id.imageButton_save);
+        btn_save = (ImageButton)findViewById(R.id.imageButton_save);
         btn_save.setOnClickListener(this);
-        final ImageButton btn_start = (ImageButton)findViewById(R.id.imageButton_start);
+        btn_start = (ImageButton)findViewById(R.id.imageButton_start);
         btn_start.setOnClickListener(this);
-        final ImageButton btn_stop = (ImageButton)findViewById(R.id.imageButton_stop);
+        btn_stop = (ImageButton)findViewById(R.id.imageButton_stop);
         btn_stop.setOnClickListener(this);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         finally{
             try{
-                in.close();
+                if(in!=null) in.close();
                 if(fin!=null)  fin.close();
             }
             catch(IOException ex){
