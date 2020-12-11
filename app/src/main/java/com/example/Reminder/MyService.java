@@ -28,6 +28,7 @@ public class MyService extends Service {
 
     @Override
     public void onDestroy() {
+        Toast.makeText(getApplicationContext(), "Служба уничтожена", Toast.LENGTH_SHORT).show();
         Log.d(LOG_TAG, "onDestroy");
     }
 
@@ -57,6 +58,7 @@ public class MyService extends Service {
             Intent intent = new Intent(getApplicationContext(), ActivityItem.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+            stopSelf();
         }
     }
 }

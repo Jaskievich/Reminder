@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    private ImageButton btn_add, btn_save, btn_start, btn_stop;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loadFromFile(FILE_NAME);
@@ -52,9 +53,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final ImageButton btn_stop = (ImageButton)findViewById(R.id.imageButton_stop);
         btn_stop.setOnClickListener(this);
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 ReminderItem item = listReminder.get(position);
                 Intent intent = new Intent(MainActivity.this, ActivityItem.class);
                 intent.putExtra(ReminderItem.class.getSimpleName(), item);
@@ -63,8 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    void saveToFile(String name_file)
-    {
+    void saveToFile(String name_file) {
         FileOutputStream fos = null;
         try {
             fos = openFileOutput(name_file, MODE_PRIVATE);
@@ -72,40 +74,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             obj_out.writeObject(listReminder);
             obj_out.close();
             Toast.makeText(this, "Файл сохранен", Toast.LENGTH_SHORT).show();
-        } catch ( IOException  e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-       finally{
-            try{
-                if(fos!=null) fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            if (fos != null) fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    void loadFromFile(String name_file)
-    {
+    void loadFromFile(String name_file) {
         FileInputStream fin = null;
         ObjectInputStream in = null;
         try {
             ReminderItem item = null;
             fin = openFileInput(name_file);
             in = new ObjectInputStream(fin);
-            listReminder = ((ArrayList<ReminderItem>)in.readObject());
-
+            listReminder = ((ArrayList<ReminderItem>) in.readObject());
+        } catch (IOException | ClassNotFoundException ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
-        catch(IOException | ClassNotFoundException ex) {
+        try {
+            if (in != null) in.close();
+            if (fin != null) fin.close();
+        } catch (IOException ex) {
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-        finally{
-            try{
-                if(in!=null) in.close();
-                if(fin!=null)  fin.close();
-            }
-            catch(IOException ex){
-                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
