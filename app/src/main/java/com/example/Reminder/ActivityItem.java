@@ -18,6 +18,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class ActivityItem extends AppCompatActivity implements View.OnClickListener,
@@ -25,6 +26,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
     private EditText editTitle, editDescript, editDate, editTime;
     final private Calendar myCalendar = Calendar.getInstance();
+ //   final private Calendar myCalendar = new GregorianCalendar();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         btn_date.setOnClickListener(this);
         btn_app.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+        editDate.setOnClickListener(this);
+        editTime.setOnClickListener(this);
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
@@ -48,6 +52,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 editTitle.setText(item.getTitle());
                 updateLabelDate(item.getDate());
                 editDescript.setText(item.getDescription());
+                myCalendar.setTime(item.getDate());
             }
         }
     }
@@ -59,14 +64,6 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         sdf.applyPattern("hh:mm");
         editTime.setText(sdf.format(date));
     }
-
-//    private void updateLabelDate() {
-//        String myFormat = "MM/dd/yy"; //In which you need put here
-//        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-//        editDate.setText(sdf.format(myCalendar.getTime()));
-//        sdf.applyPattern("hh:mm");
-//        editTime.setText(sdf.format(myCalendar.getTime()));
-//    }
 
     private void apple()
     {
@@ -103,6 +100,15 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 new DatePickerDialog(this, this, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                         myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                break;
+            case R.id.editText_date:
+                new DatePickerDialog(this, this, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                break;
+            case R.id.editTextTime:
+                new TimePickerDialog(this, this,  myCalendar.get(Calendar.HOUR),
+                        myCalendar.get(Calendar.MINUTE), DateFormat.is24HourFormat(this)).show();
                 break;
         }
     }

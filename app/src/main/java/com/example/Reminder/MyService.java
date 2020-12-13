@@ -10,8 +10,11 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,6 +22,7 @@ public class MyService extends Service {
 
     final String LOG_TAG = "MyService";
     private Timer timer;
+    private Stack<ReminderItem> stackReminder = null;
 
     public void onCreate() {
         super.onCreate();
@@ -32,7 +36,7 @@ public class MyService extends Service {
         Log.d(LOG_TAG, "onDestroy");
     }
 
-    @Override
+  /*  @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         timer = new Timer();
         Date dt = new Date();
@@ -42,6 +46,23 @@ public class MyService extends Service {
         timer.schedule(new MyTimerTask(), calendar.getTime());
         Log.d(LOG_TAG, "onStartCommand");
         return Service.START_STICKY;
+    }*/
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        ArrayList<ReminderItem> listReminder = (ArrayList<ReminderItem>) intent.getSerializableExtra("listRemind");
+        if( listReminder == null || listReminder.size() == 0 ) {
+            Toast.makeText(this, "Служба не создана", Toast.LENGTH_SHORT).show();
+            return Service.START_NOT_STICKY;
+        }
+        stackReminder = new Stack<>();
+        stackReminder.addAll(listReminder);
+        timer = new Timer();
+        ReminderItem item = stackReminder.pop();
+        timer.schedule(new MyTimerTask(), item.getDate());
+        Log.d(LOG_TAG, "onStartCommand");
+        return Service.START_NOT_STICKY;
     }
 
     @Override
@@ -51,14 +72,17 @@ public class MyService extends Service {
     }
 
     class MyTimerTask extends TimerTask{
-
         @Override
         public void run() {
             Log.d(LOG_TAG, "run");
             Intent intent = new Intent(getApplicationContext(), ActivityItem.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            stopSelf();
+            if( !stackReminder.empty() ) {
+                ReminderItem item = stackReminder.pop();
+                timer.schedule(this, item.getDate());
+            }
+            else stopSelf();
         }
     }
 }

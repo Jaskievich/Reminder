@@ -26,21 +26,28 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final static String FILE_NAME = "content.txt";
-    private ArrayList<ReminderItem> listReminder = new ArrayList<>();
+    private ReminderCtrl reminderCtrl = new ReminderCtrl();
+    private ArrayList<ReminderItem> listReminder = null;
     private AdapterReminder adp;
-//    private ImageButton btn_add, btn_save, btn_start, btn_stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadFromFile(FILE_NAME);
+        if( loadFromFile(FILE_NAME) ){
+            reminderCtrl.setListReminder(listReminder);
+        }
+        else listReminder = new ArrayList<>();
         ListView lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
@@ -84,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    void loadFromFile(String name_file) {
+    boolean loadFromFile(String name_file) {
+        boolean isRes = true;
         FileInputStream fin = null;
         ObjectInputStream in = null;
         try {
@@ -94,18 +102,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             listReminder = ((ArrayList<ReminderItem>) in.readObject());
         } catch (IOException | ClassNotFoundException ex) {
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+            isRes = false;
         }
         try {
             if (in != null) in.close();
             if (fin != null) fin.close();
         } catch (IOException ex) {
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            isRes = false;
         }
+        return isRes;
     }
 
     void startServiceTask()
     {
+        ArrayList<ReminderItem> stackReminderActual = reminderCtrl.getListActualReminder();
+        adp.notifyDataSetChanged();
         Intent intent = new Intent(this, MyService.class);
+        intent.putExtra("listRemind", stackReminderActual);
         startService(intent);
     }
 
