@@ -44,10 +44,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if( loadFromFile(FILE_NAME) ){
-            reminderCtrl.setListReminder(listReminder);
+        if( !loadFromFile(FILE_NAME) ){
+            listReminder = new ArrayList<>();
         }
-        else listReminder = new ArrayList<>();
+        reminderCtrl.setListReminder(listReminder);
         ListView lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);

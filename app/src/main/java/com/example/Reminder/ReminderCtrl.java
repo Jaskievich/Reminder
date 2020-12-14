@@ -22,7 +22,7 @@ public class ReminderCtrl
     }
 
     public void sort(){
-
+        if(listReminder.size() < 2) return;
         Collections.sort(listReminder, new Comparator<ReminderItem>() {
             @Override
             public int compare(ReminderItem o1, ReminderItem o2) {
