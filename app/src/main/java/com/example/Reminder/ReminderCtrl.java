@@ -36,7 +36,8 @@ public class ReminderCtrl
         ArrayList<ReminderItem> listRes = new ArrayList<>();
         Date date = new Date();
         for (ReminderItem item: listReminder ) {
-            if( date.before(item.getDate())) listRes.add(item);
+           // if( date.before(item.getDate()) ) listRes.add(item);
+            if( date.getTime() < item.getDate().getTime() ) listRes.add(item);
         }
         return listRes;
     }
