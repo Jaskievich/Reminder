@@ -59,9 +59,9 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
     private void updateLabelDate(Date date) {
         String myFormat = "MM/dd/yy"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
         editDate.setText(sdf.format(date));
-        sdf.applyPattern("hh:mm");
+        sdf.applyPattern("HH:MM");
         editTime.setText(sdf.format(date));
     }
 
@@ -108,7 +108,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.editTextTime:
                 new TimePickerDialog(this, this,  myCalendar.get(Calendar.HOUR),
-                        myCalendar.get(Calendar.MINUTE), DateFormat.is24HourFormat(this)).show();
+                        myCalendar.get(Calendar.MINUTE),/* DateFormat.is24HourFormat(this)*/true).show();
                 break;
         }
     }
@@ -122,7 +122,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         int hour = myCalendar.get(Calendar.HOUR);
         int minute = myCalendar.get(Calendar.MINUTE);
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, this, hour, minute,
-                DateFormat.is24HourFormat(this));
+               /* DateFormat.is24HourFormat(this)*/true);
         timePickerDialog.show();
     }
 
