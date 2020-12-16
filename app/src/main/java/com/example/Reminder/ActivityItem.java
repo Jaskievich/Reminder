@@ -129,8 +129,10 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute)
     {
-        myCalendar.set(Calendar.HOUR, hourOfDay);
-        myCalendar.set(Calendar.MINUTE, minute);
+        int year = myCalendar.get(Calendar.YEAR);
+        int month = myCalendar.get(Calendar.MONTH);
+        int dayOfMonth = myCalendar.get(Calendar.DAY_OF_MONTH);
+        myCalendar.set(year, month, dayOfMonth, hourOfDay, minute);
         updateLabelDate(myCalendar.getTime());
     }
 }
