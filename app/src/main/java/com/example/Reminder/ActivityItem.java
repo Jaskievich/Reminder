@@ -26,7 +26,6 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
     private EditText editTitle, editDescript, editDate, editTime;
     final private Calendar myCalendar = Calendar.getInstance();
- //   final private Calendar myCalendar = new GregorianCalendar();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +60,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
         editDate.setText(sdf.format(date));
-        sdf.applyPattern("HH:MM");
+        sdf.applyPattern("HH:mm");
         editTime.setText(sdf.format(date));
     }
 

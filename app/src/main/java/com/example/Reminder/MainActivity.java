@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,25 +14,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ReminderCtrl reminderCtrl = new ReminderCtrl();
     private ArrayList<ReminderItem> listReminder = null;
     private AdapterReminder adp;
+    private AlarmManager am;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intent, position);
             }
         });
+
+        am = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
     void saveToFile(String name_file) {
@@ -114,19 +112,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return isRes;
     }
 
-    void startServiceTask()
+/*    void startServiceTask()
     {
         ArrayList<ReminderItem> stackReminderActual = reminderCtrl.getListActualReminder();
+        if( stackReminderActual.size() == 0 ) return;
         adp.notifyDataSetChanged();
         Intent intent = new Intent(this, MyService.class);
         intent.putExtra("listRemind", stackReminderActual);
         startService(intent);
     }
+    */
 
-    void stopServiceTask()
+    void startAlarmTask()
+    {
+        ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
+        if( listActualReminder.size() == 0 ) return;
+        adp.notifyDataSetChanged();
+        Intent intent = new Intent(this, MyReceiver.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("listRemind", listActualReminder);
+        intent.putExtra("listBundle", bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 1, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
+        ReminderItem item = listActualReminder.get(0);
+        am.set(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
+        Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
+    }
+
+  /*  void stopServiceTask()
     {
         stopService(new Intent(this, MyService.class) );
     }
+    */
 
     @Override
     public void onClick(View v) {
@@ -139,10 +155,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 saveToFile(FILE_NAME);
                 break;
             case R.id.imageButton_start:
-                startServiceTask();
+                startAlarmTask();
                 break;
             case R.id.imageButton_stop:
-                stopServiceTask();
+          //      stopServiceTask();
                 break;
         }
     }

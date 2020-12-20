@@ -53,7 +53,7 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         ArrayList<ReminderItem> listReminder = (ArrayList<ReminderItem>) intent.getSerializableExtra("listRemind");
-        if( listReminder == null || listReminder.size() == 0 ) {
+        if( listReminder == null ) {
             Toast.makeText(this, "Служба не запущена", Toast.LENGTH_SHORT).show();
             return Service.START_NOT_STICKY;
         }
