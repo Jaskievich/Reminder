@@ -12,15 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver
-            android:name=".MyReceiver"
-            android:enabled="true"
-            android:exported="true"></receiver>
 
-        <service
-            android:name=".MyService"
-            android:enabled="true"
-            android:exported="true" />
+        <service android:name=".MyJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" ></service>
+<!--        <receiver-->
+<!--            android:name=".MyReceiver"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true"></receiver>-->
+
+<!--        <service-->
+<!--            android:name=".MyService"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="true" />-->
 
         <activity android:name=".ActivityItem" />
         <activity android:name=".MainActivity">

@@ -4,8 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ReminderCtrl reminderCtrl = new ReminderCtrl();
     private ArrayList<ReminderItem> listReminder = null;
     private AdapterReminder adp;
-    private AlarmManager am;
+ //   private AlarmManager am;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        am = (AlarmManager) getSystemService(ALARM_SERVICE);
+    //    am = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
     void saveToFile(String name_file) {
@@ -123,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     */
 
-    void startAlarmTask()
+ /*   void startAlarmTask()
     {
         ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
         if( listActualReminder.size() == 0 ) return;
@@ -137,6 +141,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         am.set(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
         Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
     }
+*/
+
+    void startAlarmTask()
+    {
+        ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
+        if( listActualReminder.size() == 0 ) return;
+        adp.notifyDataSetChanged();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+            ComponentName componentName = new ComponentName(this, MyJobService.class);
+            JobInfo jobInfoObj = new JobInfo.Builder(1, componentName).build();
+            jobScheduler.schedule(jobInfoObj);
+            Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
   /*  void stopServiceTask()
     {
