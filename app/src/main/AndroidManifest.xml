@@ -4,6 +4,8 @@
     package="com.example.Reminder">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <application
         android:allowBackup="true"
@@ -13,12 +15,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <service android:name=".MyJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" ></service>
-<!--        <receiver-->
-<!--            android:name=".MyReceiver"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true"></receiver>-->
+<!--        <service android:name=".MyJobService"-->
+<!--            android:permission="android.permission.BIND_JOB_SERVICE" ></service>-->
+        <receiver
+            android:name=".MyReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
 <!--        <service-->
 <!--            android:name=".MyService"-->

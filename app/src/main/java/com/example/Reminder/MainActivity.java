@@ -12,6 +12,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ReminderCtrl reminderCtrl = new ReminderCtrl();
     private ArrayList<ReminderItem> listReminder = null;
     private AdapterReminder adp;
- //   private AlarmManager am;
+    private AlarmManager am;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-    //    am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        am = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
     void saveToFile(String name_file) {
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     */
 
- /*   void startAlarmTask()
+    void startAlarmTask()
     {
         ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
         if( listActualReminder.size() == 0 ) return;
@@ -138,12 +139,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.putExtra("listBundle", bundle);
         PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 1, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
         ReminderItem item = listActualReminder.get(0);
-        am.set(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
+      //  am.set(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
+//            AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(item.getDate().getTime(),   pi);
+//            am.setAlarmClock(ac, pi);
+        }
+        else{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                am.setExact(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
+            }
+        }
+
         Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
     }
-*/
 
-    void startAlarmTask()
+
+   /* void startAlarmTask()
     {
         ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
         if( listActualReminder.size() == 0 ) return;
@@ -151,11 +164,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
             ComponentName componentName = new ComponentName(this, MyJobService.class);
-            JobInfo jobInfoObj = new JobInfo.Builder(1, componentName).build();
+            JobInfo jobInfoObj = new JobInfo.Builder(1, componentName)
+                    .setBackoffCriteria(6000, JobInfo.BACKOFF_POLICY_LINEAR)
+                    .setMinimumLatency(1000*120)
+                    .setOverrideDeadline(1000*200)
+                    .build();
             jobScheduler.schedule(jobInfoObj);
             Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
         }
-    }
+    }*/
 
 
   /*  void stopServiceTask()
