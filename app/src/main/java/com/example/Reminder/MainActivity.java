@@ -142,9 +142,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       //  am.set(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
-//            AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(item.getDate().getTime(),   pi);
-//            am.setAlarmClock(ac, pi);
+    //        am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
+            AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(item.getDate().getTime(),   pi);
+            am.setAlarmClock(ac, pi);
         }
         else{
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
