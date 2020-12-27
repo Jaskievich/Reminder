@@ -2,6 +2,7 @@ package com.example.Reminder;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -30,7 +31,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ReminderCtrl reminderCtrl = new ReminderCtrl();
     private ArrayList<ReminderItem> listReminder = null;
     private AdapterReminder adp;
-    private AlarmManager am;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        am = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
-    void saveToFile(String name_file) {
+    void saveToFile(String name_file)
+    {
         FileOutputStream fos = null;
         try {
             fos = openFileOutput(name_file, MODE_PRIVATE);
@@ -94,7 +96,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    boolean loadFromFile(String name_file) {
+    boolean loadFromFile(String name_file)
+    {
         boolean isRes = true;
         FileInputStream fin = null;
         ObjectInputStream in = null;
@@ -128,58 +131,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     */
 
+
     void startAlarmTask()
     {
         ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
-        if( listActualReminder.size() == 0 ) return;
+        if (listActualReminder.size() == 0) return;
         adp.notifyDataSetChanged();
-        Intent intent = new Intent(this, MyReceiver.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("listRemind", listActualReminder);
-        intent.putExtra("listBundle", bundle);
-        PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 1, intent,  PendingIntent.FLAG_UPDATE_CURRENT);
-        ReminderItem item = listActualReminder.get(0);
-      //  am.set(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-    //        am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
-            AlarmManager.AlarmClockInfo ac= new AlarmManager.AlarmClockInfo(item.getDate().getTime(),   pi);
-            am.setAlarmClock(ac, pi);
-        }
-        else{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                am.setExact(AlarmManager.RTC_WAKEUP, item.getDate().getTime(), pi);
-            }
-        }
-
+        Collections.reverse(listActualReminder);
+        int index_last = listActualReminder.size() - 1;
+        ReminderItem item = listActualReminder.get(index_last);
+        MyReceiver.startNewAlarmTask(this, listActualReminder, item.getDate());
         Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
     }
-
-
-   /* void startAlarmTask()
-    {
-        ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
-        if( listActualReminder.size() == 0 ) return;
-        adp.notifyDataSetChanged();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
-            ComponentName componentName = new ComponentName(this, MyJobService.class);
-            JobInfo jobInfoObj = new JobInfo.Builder(1, componentName)
-                    .setBackoffCriteria(6000, JobInfo.BACKOFF_POLICY_LINEAR)
-                    .setMinimumLatency(1000*120)
-                    .setOverrideDeadline(1000*200)
-                    .build();
-            jobScheduler.schedule(jobInfoObj);
-            Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
-        }
-    }*/
-
 
   /*  void stopServiceTask()
     {
         stopService(new Intent(this, MyService.class) );
     }
     */
+
+    private void stopAlarm(){
+        MyReceiver.stopAlarmTask(this);
+    }
 
     @Override
     public void onClick(View v) {
@@ -195,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startAlarmTask();
                 break;
             case R.id.imageButton_stop:
-          //      stopServiceTask();
+                stopAlarm();
                 break;
         }
     }

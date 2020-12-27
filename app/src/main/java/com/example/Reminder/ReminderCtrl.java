@@ -41,5 +41,15 @@ public class ReminderCtrl
         }
         return listRes;
     }
+ /*   public Stack<ReminderItem> getStackActualReminder(){
+        sort();
+        Stack<ReminderItem> stackRes = new Stack<ReminderItem>();
+        Date date = new Date();
+        for (ReminderItem item: listReminder ) {
+            // if( date.before(item.getDate()) ) listRes.add(item);
+            if( date.getTime() < item.getDate().getTime() ) stackRes.push(item);
+        }
+        return stackRes;
+    }*/
 
 }

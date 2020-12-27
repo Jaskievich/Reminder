@@ -1,10 +1,17 @@
 package com.example.Reminder;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.KeyguardManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.WindowManager;
@@ -12,41 +19,82 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Stack;
+
+import static android.content.Context.ALARM_SERVICE;
 
 public class MyReceiver extends BroadcastReceiver
 {
 
-    private Stack<ReminderItem> stackReminder = null;
+    private void makeSoundDefault(Context context)
+    {
+        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        }
+        Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
+        ringtone.play();
+    }
+
+
     @Override
-    public void onReceive(Context context, Intent _intent) {
+    public void onReceive(Context context, Intent _intent)
+    {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
+        makeSoundDefault(context);
         Bundle bundle = _intent.getBundleExtra("listBundle");
-        if(bundle == null) return;
+        if (bundle == null) return;
         ArrayList<ReminderItem> listReminder = (ArrayList<ReminderItem>) bundle.getSerializable("listRemind");
-        if( listReminder == null ) return ;
-
+        if (listReminder == null || listReminder.size() == 0) return;
+        // Взять последнюю запись
+        int index_last = listReminder.size() - 1;
+        ReminderItem item = listReminder.get(index_last);
+        listReminder.remove(index_last);
+        // Разбудить экран
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         @SuppressLint("InvalidWakeLockTag")
-        PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-     //    PowerManager.WakeLock wakeLock = pm.newWakeLock(( PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-
-//        KeyguardManager keyguardManager = (KeyguardManager)  context.getSystemService(Context.KEYGUARD_SERVICE);
-//        KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
-//        keyguardLock.disableKeyguard();
-         wakeLock.acquire();
-
-        Collections.reverse(listReminder);
-        stackReminder = new Stack<>();
-        stackReminder.addAll(listReminder);
-        ReminderItem item = stackReminder.pop();
+        PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
+        wakeLock.acquire();
         Intent intent = new Intent(context, ActivityItem.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
         context.startActivity(intent);
-
         wakeLock.release();
+        // Запустить следующее задание
+        index_last = listReminder.size() - 1;
+        if (index_last > -1) {
+            ReminderItem item_peek = listReminder.get(index_last);
+            startNewAlarmTask(context, listReminder, item_peek.getDate());
+        }
     }
+
+
+    static public void startNewAlarmTask(Context context, ArrayList<ReminderItem> listReminder, Date date)
+    {
+        Intent intent = new Intent(context, MyReceiver.class);
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("listRemind", listReminder);
+        intent.putExtra("listBundle", bundle);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            am.setExact(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
+        }
+    }
+
+    static public void stopAlarmTask(Context context)
+    {
+        Intent intent = new Intent(context, MyReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_NO_CREATE);
+        if (pi != null) {
+            AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            am.cancel(pi);
+        }
+    }
+
 }

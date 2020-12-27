@@ -8,7 +8,6 @@ public class ReminderItem implements Serializable
     private String title;
     private String description;
     private Date date;
-    private boolean isReady = false;
 
     ReminderItem(){}
 
@@ -42,11 +41,4 @@ public class ReminderItem implements Serializable
         this.date = date;
     }
 
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public void setReady(boolean ready) {
-        isReady = ready;
-    }
 }

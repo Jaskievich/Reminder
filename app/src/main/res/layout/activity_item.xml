@@ -39,16 +39,16 @@
 
         <ImageButton
             android:id="@+id/imageButton_date"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_weight="0"
             app:srcCompat="@android:drawable/ic_menu_recent_history" />
 
         <EditText
             android:id="@+id/editText_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:ems="10"
             android:inputType="date"
             android:autofillHints="" />
@@ -57,7 +57,7 @@
             android:id="@+id/editTextTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:ems="10"
             android:inputType="time"
             android:importantForAutofill="no" />
