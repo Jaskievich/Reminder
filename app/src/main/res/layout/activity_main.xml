@@ -23,7 +23,7 @@
             android:contentDescription="TODO" />
 
         <ImageButton
-            android:id="@+id/imageButton_clear"
+            android:id="@+id/imageButton_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -72,6 +72,7 @@
     <ListView
         android:id="@+id/ltv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:listSelector="#0f0"/>
 
 </LinearLayout>

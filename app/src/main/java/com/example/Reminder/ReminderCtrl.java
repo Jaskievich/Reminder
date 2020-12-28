@@ -31,6 +31,14 @@ public class ReminderCtrl
         });
     }
 
+    public boolean delItemByIndex(int index){
+        if( index > -1 && index < listReminder.size() ){
+            listReminder.remove(index);
+            return true;
+        }
+        return false;
+    }
+
     public ArrayList<ReminderItem> getListActualReminder(){
         sort();
         ArrayList<ReminderItem> listRes = new ArrayList<>();

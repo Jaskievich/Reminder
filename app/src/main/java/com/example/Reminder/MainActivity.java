@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final static String FILE_NAME = "content.txt";
     private ReminderCtrl reminderCtrl = new ReminderCtrl();
     private ArrayList<ReminderItem> listReminder = null;
+    private  ListView lv = null;
     private AdapterReminder adp;
+    private int curr_pos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             listReminder = new ArrayList<>();
         }
         reminderCtrl.setListReminder(listReminder);
-        ListView lv = (ListView) findViewById(R.id.ltv);
+        lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
         final ImageButton btn_add = (ImageButton) findViewById(R.id.imageButton_add);
@@ -62,16 +65,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_start.setOnClickListener(this);
         final ImageButton btn_stop = (ImageButton)findViewById(R.id.imageButton_stop);
         btn_stop.setOnClickListener(this);
+        final ImageButton btn_del = (ImageButton)findViewById(R.id.imageButton_delete);
+        btn_del.setOnClickListener(this);
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 ReminderItem item = listReminder.get(position);
                 Intent intent = new Intent(MainActivity.this, ActivityItem.class);
                 intent.putExtra(ReminderItem.class.getSimpleName(), item);
                 startActivityForResult(intent, position);
+                return false;
+            }
+        });
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                curr_pos = position;
+            }
+        });
+
+        lv.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                curr_pos = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -150,6 +173,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     */
 
+    private void DeleteItem()
+    {
+       if( reminderCtrl.delItemByIndex(curr_pos) ) {
+           adp.notifyDataSetChanged();
+           if(curr_pos == listReminder.size()) {
+               lv.requestFocusFromTouch();
+               lv.setSelection(curr_pos - 1);
+           }
+
+       }
+    }
+
     private void stopAlarm(){
         MyReceiver.stopAlarmTask(this);
     }
@@ -169,6 +204,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imageButton_stop:
                 stopAlarm();
+                break;
+            case R.id.imageButton_delete:
+                DeleteItem();
                 break;
         }
     }
