@@ -5,4 +5,5 @@
     <string name="title_item">Заголовок:</string>
     <string name="cancel">Отмена</string>
     <string name="apple">Применить</string>
+    <string name="close">Закрыть</string>
 </resources>

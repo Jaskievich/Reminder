@@ -32,8 +32,6 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
-        getWindow().addFlags( WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         final Button btn_app = (Button) findViewById(R.id.button_app);
         editTitle = (EditText)findViewById(R.id.editText_title) ;
         editDescript = (EditText)findViewById(R.id.editTextMultiLine_descr);

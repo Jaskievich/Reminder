@@ -27,23 +27,11 @@ import static android.content.Context.ALARM_SERVICE;
 public class MyReceiver extends BroadcastReceiver
 {
 
-    private void makeSoundDefault(Context context)
-    {
-        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null) {
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        }
-        Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
-        ringtone.play();
-    }
-
-
     @Override
     public void onReceive(Context context, Intent _intent)
     {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-        makeSoundDefault(context);
         Bundle bundle = _intent.getBundleExtra("listBundle");
         if (bundle == null) return;
         ArrayList<ReminderItem> listReminder = (ArrayList<ReminderItem>) bundle.getSerializable("listRemind");
@@ -57,7 +45,7 @@ public class MyReceiver extends BroadcastReceiver
         @SuppressLint("InvalidWakeLockTag")
         PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
         wakeLock.acquire();
-        Intent intent = new Intent(context, ActivityItem.class);
+        Intent intent = new Intent(context, ActivityItemView.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
         context.startActivity(intent);
