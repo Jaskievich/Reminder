@@ -8,6 +8,7 @@ public class ReminderItem implements Serializable
     private String title;
     private String description;
     private Date date;
+    private String audio_file;
 
     ReminderItem(){}
 
@@ -41,4 +42,10 @@ public class ReminderItem implements Serializable
         this.date = date;
     }
 
+    public String getAudio_file() {
+        return audio_file;
+    }
+    public void setAudio_file(String audio_file) {
+        this.audio_file = audio_file;
+    }
 }
