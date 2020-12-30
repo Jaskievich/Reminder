@@ -27,6 +27,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
     private EditText editTitle, editDescript, editDate, editTime;
     final private Calendar myCalendar = Calendar.getInstance();
+    private DatePickerDialog datePickerDialog = null;
+    private TimePickerDialog timePickerDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         btn_cancel.setOnClickListener(this);
         editDate.setOnClickListener(this);
         editTime.setOnClickListener(this);
+        final ImageButton btn_audio = (ImageButton) findViewById(R.id.img_btn_audio);
+        btn_audio.setOnClickListener(this);
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
@@ -85,6 +89,15 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         finish();
     }
 
+    private void ShowDateDialog()
+    {
+        if( datePickerDialog == null )
+            datePickerDialog = new DatePickerDialog(this, this, myCalendar
+                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
+    }
+
 
     @Override
     public void onClick(View v)
@@ -97,19 +110,21 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.imageButton_date:
-                new DatePickerDialog(this, this, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                ShowDateDialog();
                 break;
             case R.id.editText_date:
-                new DatePickerDialog(this, this, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                ShowDateDialog();
                 break;
             case R.id.editTextTime:
-                new TimePickerDialog(this, this,  myCalendar.get(Calendar.HOUR),
-                        myCalendar.get(Calendar.MINUTE),/* DateFormat.is24HourFormat(this)*/true).show();
+                if(timePickerDialog == null)
+                    timePickerDialog = new TimePickerDialog(this, this,  myCalendar.get(Calendar.HOUR),
+                        myCalendar.get(Calendar.MINUTE),/* DateFormat.is24HourFormat(this)*/true);
+                timePickerDialog.show();
                 break;
+            case R.id.img_btn_audio:
+                
+                break;
+
         }
     }
 
