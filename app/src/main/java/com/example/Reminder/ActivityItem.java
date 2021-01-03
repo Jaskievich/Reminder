@@ -1,12 +1,22 @@
 package com.example.Reminder;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.format.DateFormat;
+import android.transition.Transition;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,16 +40,19 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
     final private Calendar myCalendar = Calendar.getInstance();
     private DatePickerDialog datePickerDialog = null;
     private TimePickerDialog timePickerDialog = null;
+    private MyDialogAudio dialogAudio = null;
+    private EditText textFileAudio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item);
-        final Button btn_app = (Button) findViewById(R.id.button_app);
         editTitle = (EditText)findViewById(R.id.editText_title) ;
         editDescript = (EditText)findViewById(R.id.editTextMultiLine_descr);
         editDate = (EditText) findViewById(R.id.editText_date);
         editTime = (EditText) findViewById(R.id.editTextTime);
+        textFileAudio = (EditText) findViewById(R.id.editTextFileAudio);
+        final Button btn_app = (Button) findViewById(R.id.button_app);
         final ImageButton btn_date = (ImageButton)findViewById(R.id.imageButton_date);
         final Button btn_cancel = (Button) findViewById(R.id.button_cancel);
         btn_date.setOnClickListener(this);
@@ -83,6 +97,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         item.setTitle(editTitle.getText().toString());
         item.setDescription(editDescript.getText().toString());
         item.setDate(myCalendar.getTime());
+        if( dialogAudio!=null  )
+            item.setAudio_file(dialogAudio.getPathName());
         Intent intent = new Intent();
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
         setResult(RESULT_OK, intent);
@@ -122,7 +138,13 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 timePickerDialog.show();
                 break;
             case R.id.img_btn_audio:
-                
+                if( dialogAudio == null ) dialogAudio = new MyDialogAudio();
+                StringBuilder str = new StringBuilder(Environment.getExternalStorageDirectory().toString());
+                str.append("/");
+                str.append(textFileAudio.getText().toString());
+                str.append(".3gpp");
+                dialogAudio.setPathName(str.toString());
+                dialogAudio.show(getFragmentManager());
                 break;
 
         }
@@ -149,5 +171,99 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         int dayOfMonth = myCalendar.get(Calendar.DAY_OF_MONTH);
         myCalendar.set(year, month, dayOfMonth, hourOfDay, minute);
         updateLabelDate(myCalendar.getTime());
+    }
+
+    public static class MyDialogAudio extends DialogFragment
+    {
+        private boolean isShowDialog = false;
+        private MediaRecorder recorder = null;
+
+        public String getPathName() {
+            return pathName;
+        }
+
+        public void setPathName(String pathName) {
+            this.pathName = pathName;
+        }
+
+        private String pathName;
+
+        public MyDialogAudio( ){
+        }
+
+        private void releaseRecorder() {
+            if (recorder != null) {
+                recorder.release();
+                recorder = null;
+            }
+        }
+
+        private void startRecord() throws IOException {
+            releaseRecorder();
+            recorder = new MediaRecorder();
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder.setOutputFile(pathName);
+            recorder.prepare();
+            recorder.start();   // Recording is now started
+        }
+
+        private void stopRecord()  {
+            if( recorder != null){
+                recorder.stop();
+             //   recorder.reset();   // You can reuse the object by going back to setAudioSource() step
+                recorder.release(); // Now the object cannot be reused
+            }
+        }
+
+        private void cancelRecord()
+        {
+
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Говорите")
+                    .setPositiveButton(R.string.stop, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // FIRE ZE MISSILES!
+                            stopRecord();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            cancelRecord();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+
+        public void show(FragmentManager fr_mng){
+            if( !isShowDialog ) {
+                isShowDialog = true;
+                show(fr_mng, "dialogAudio");
+                try {
+                    startRecord();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog)
+        {
+            cancelRecord();
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            isShowDialog = false;
+            super.onDismiss(dialog);
+        }
     }
 }

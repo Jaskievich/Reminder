@@ -3,6 +3,7 @@ package com.example.Reminder;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import java.util.Locale;
 public class ActivityItemView extends AppCompatActivity {
 
     private Ringtone ringtone = null;
+    private MediaPlayer mediaPlayer = null;
 
     private void makeSoundDefault()
     {
@@ -45,7 +47,8 @@ public class ActivityItemView extends AppCompatActivity {
                 text_title.setText(item.getTitle());
                 updateLabelDate(item.getDate());
                 text_Descript.setText(item.getDescription());
-                makeSoundDefault();
+                if( item.getAudio_file().isEmpty()) makeSoundDefault();
+                else playAudio(item.getAudio_file());
             }
         }
 
@@ -58,9 +61,25 @@ public class ActivityItemView extends AppCompatActivity {
         });
     }
 
+    private void playAudio(String audio_file) {
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(audio_file);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         if( ringtone != null ) ringtone.stop();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
         super.onDestroy();
     }
 
