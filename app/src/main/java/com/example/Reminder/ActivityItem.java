@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaRecorder;
@@ -99,6 +100,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         item.setDate(myCalendar.getTime());
         if( dialogAudio!=null  )
             item.setAudio_file(dialogAudio.getPathName());
+        else  item.setAudio_file("");
         Intent intent = new Intent();
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
         setResult(RESULT_OK, intent);
@@ -138,7 +140,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 timePickerDialog.show();
                 break;
             case R.id.img_btn_audio:
-                if( dialogAudio == null ) dialogAudio = new MyDialogAudio();
+                if( dialogAudio == null ) dialogAudio = new MyDialogAudio(this);
                 StringBuilder str = new StringBuilder(Environment.getExternalStorageDirectory().toString());
                 str.append("/");
                 str.append(textFileAudio.getText().toString());
@@ -173,10 +175,12 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         updateLabelDate(myCalendar.getTime());
     }
 
-    public static class MyDialogAudio extends DialogFragment
+    @SuppressLint("ValidFragment")
+    public class MyDialogAudio extends DialogFragment
     {
         private boolean isShowDialog = false;
         private MediaRecorder recorder = null;
+        private Context context;
 
         public String getPathName() {
             return pathName;
@@ -188,7 +192,10 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
         private String pathName;
 
-        public MyDialogAudio( ){
+
+        @SuppressLint("ValidFragment")
+        public MyDialogAudio(Context context){
+            this.context = context;
         }
 
         private void releaseRecorder() {
@@ -198,7 +205,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             }
         }
 
-        private void startRecord() throws IOException {
+        private void startRecord() throws IllegalStateException, IOException {
             releaseRecorder();
             recorder = new MediaRecorder();
             recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -211,15 +218,20 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
         private void stopRecord()  {
             if( recorder != null){
-                recorder.stop();
-             //   recorder.reset();   // You can reuse the object by going back to setAudioSource() step
-                recorder.release(); // Now the object cannot be reused
+                try {
+                    recorder.stop();
+                    //   recorder.reset();   // You can reuse the object by going back to setAudioSource() step
+                    recorder.release(); // Now the object cannot be reused
+                } catch (IllegalStateException e){
+                    Toast.makeText(context, "Ошибка записи аудио-файла", Toast.LENGTH_LONG).show();
+                }
             }
         }
 
         private void cancelRecord()
         {
-
+            // Остановить
+            // Удалить файл
         }
 
         @Override
@@ -244,12 +256,14 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
         public void show(FragmentManager fr_mng){
             if( !isShowDialog ) {
-                isShowDialog = true;
-                show(fr_mng, "dialogAudio");
                 try {
                     startRecord();
-                } catch (IOException e) {
+                    isShowDialog = true;
+                    show(fr_mng, "dialogAudio");
+                } catch (IllegalStateException | IOException e) {
                     e.printStackTrace();
+                    pathName = "";
+                    Toast.makeText(context, "Запись не запущена", Toast.LENGTH_LONG).show();
                 }
             }
         }
