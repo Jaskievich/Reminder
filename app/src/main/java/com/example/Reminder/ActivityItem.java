@@ -72,6 +72,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 updateLabelDate(item.getDate());
                 editDescript.setText(item.getDescription());
                 myCalendar.setTime(item.getDate());
+                textFileAudio.setText(item.getAudio_file());
             }
         }
     }
@@ -98,8 +99,9 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         item.setTitle(editTitle.getText().toString());
         item.setDescription(editDescript.getText().toString());
         item.setDate(myCalendar.getTime());
-        if( dialogAudio!=null  )
+        if( dialogAudio!=null ) {
             item.setAudio_file(dialogAudio.getPathName());
+        }
         else  item.setAudio_file("");
         Intent intent = new Intent();
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
@@ -114,6 +116,19 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
+    }
+
+    private String generateAudiFile(String fileName){
+       // final String dir = Environment.getExternalStorageDirectory().toString();
+       // final String dir = Environment.getDataDirectory().toString();
+        StringBuilder str = new StringBuilder();
+//        if(!fileName.startsWith(dir)) {
+//            str.append(dir);
+//            str.append("/");
+//        }
+        str.append(fileName);
+        if( !fileName.endsWith(".3gpp") ) str.append(".3gpp");
+        return str.toString();
     }
 
 
@@ -141,11 +156,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.img_btn_audio:
                 if( dialogAudio == null ) dialogAudio = new MyDialogAudio(this);
-                StringBuilder str = new StringBuilder(Environment.getExternalStorageDirectory().toString());
-                str.append("/");
-                str.append(textFileAudio.getText().toString());
-                str.append(".3gpp");
-                dialogAudio.setPathName(str.toString());
+                dialogAudio.setPathName(generateAudiFile(textFileAudio.getText().toString()));
                 dialogAudio.show(getFragmentManager());
                 break;
 
@@ -263,7 +274,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 } catch (IllegalStateException | IOException e) {
                     e.printStackTrace();
                     pathName = "";
-                    Toast.makeText(context, "Запись не запущена", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }
