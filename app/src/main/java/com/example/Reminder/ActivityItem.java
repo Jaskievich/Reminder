@@ -27,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -56,9 +57,11 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         final Button btn_app = (Button) findViewById(R.id.button_app);
         final ImageButton btn_date = (ImageButton)findViewById(R.id.imageButton_date);
         final Button btn_cancel = (Button) findViewById(R.id.button_cancel);
+        final ImageButton btn_del_file = (ImageButton) findViewById(R.id.imageButton_del_File);
         btn_date.setOnClickListener(this);
         btn_app.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
+        btn_del_file.setOnClickListener(this);
         editDate.setOnClickListener(this);
         editTime.setOnClickListener(this);
         final ImageButton btn_audio = (ImageButton) findViewById(R.id.img_btn_audio);
@@ -72,7 +75,10 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 updateLabelDate(item.getDate());
                 editDescript.setText(item.getDescription());
                 myCalendar.setTime(item.getDate());
-                textFileAudio.setText(item.getAudio_file());
+                if( !item.getAudio_file().isEmpty() ) {
+                    File file = new File(item.getAudio_file());
+                    if( file.exists() )  textFileAudio.setText(item.getAudio_file());
+                }
             }
         }
     }
@@ -102,7 +108,6 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         if( dialogAudio!=null ) {
             item.setAudio_file(dialogAudio.getPathName());
         }
-        else  item.setAudio_file("");
         Intent intent = new Intent();
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
         setResult(RESULT_OK, intent);
@@ -119,13 +124,13 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
     }
 
     private String generateAudiFile(String fileName){
-       // final String dir = Environment.getExternalStorageDirectory().toString();
+         final String dir = Environment.getExternalStorageDirectory().toString();
        // final String dir = Environment.getDataDirectory().toString();
         StringBuilder str = new StringBuilder();
-//        if(!fileName.startsWith(dir)) {
-//            str.append(dir);
-//            str.append("/");
-//        }
+        if(!fileName.startsWith(dir)) {
+            str.append(dir);
+            str.append("/");
+        }
         str.append(fileName);
         if( !fileName.endsWith(".3gpp") ) str.append(".3gpp");
         return str.toString();
@@ -158,6 +163,9 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 if( dialogAudio == null ) dialogAudio = new MyDialogAudio(this);
                 dialogAudio.setPathName(generateAudiFile(textFileAudio.getText().toString()));
                 dialogAudio.show(getFragmentManager());
+                break;
+            case R.id.imageButton_del_File:
+          
                 break;
 
         }

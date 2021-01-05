@@ -1,5 +1,6 @@
 package com.example.Reminder;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -48,4 +49,14 @@ public class ReminderItem implements Serializable
     public void setAudio_file(String audio_file) {
         this.audio_file = audio_file;
     }
+
+    public void deleteAudioFile()
+    {
+        if( !audio_file.isEmpty()){
+            File file = new File(audio_file);
+            if( file.exists()) file.delete();
+        }
+    }
+
+
 }

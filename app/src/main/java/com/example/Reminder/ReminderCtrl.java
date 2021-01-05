@@ -1,5 +1,6 @@
 package com.example.Reminder;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +34,7 @@ public class ReminderCtrl
 
     public boolean delItemByIndex(int index){
         if( index > -1 && index < listReminder.size() ){
+            listReminder.get(index).deleteAudioFile();
             listReminder.remove(index);
             return true;
         }
