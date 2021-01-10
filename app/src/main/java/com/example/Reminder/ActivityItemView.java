@@ -36,7 +36,7 @@ public class ActivityItemView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_view);
         getWindow().addFlags( WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         final TextView text_title = (TextView) findViewById(R.id.textView_title);
         final TextView text_Descript = (TextView) findViewById(R.id.TextViewMultiLine);
 
@@ -47,7 +47,7 @@ public class ActivityItemView extends AppCompatActivity {
                 text_title.setText(item.getTitle());
                 updateLabelDate(item.getDate());
                 text_Descript.setText(item.getDescription());
-                if( item.getAudio_file().isEmpty()) makeSoundDefault();
+                if(item.getAudio_file() == null || item.getAudio_file().isEmpty()) makeSoundDefault();
                 else playAudio(item.getAudio_file());
             }
         }

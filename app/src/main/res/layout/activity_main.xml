@@ -8,64 +8,56 @@
     tools:context=".MainActivity">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/imageButton_add"
+        <Button
+            android:id="@+id/button_add"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_add"
-            android:contentDescription="TODO" />
+            android:autoText="false"
+            android:drawableTop="@android:drawable/ic_menu_add"
+            android:text="@string/btn_add"
+            android:textSize="10sp" />-->
 
-        <ImageButton
-            android:id="@+id/imageButton_delete"
+        <Button
+            android:id="@+id/button_delete"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
-            android:contentDescription="TODO" />
+            android:autoText="false"
+            android:drawableTop="@android:drawable/ic_menu_delete"
+            android:text="@string/btn_del"
+            android:textSize="10sp" />
 
-        <ImageButton
-            android:id="@+id/imageButton_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_manage"
-            android:contentDescription="TODO" />
 
-        <ImageButton
-            android:id="@+id/imageButton_save"
+        <Button
+            android:id="@+id/button_start"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_save"
-            android:contentDescription="TODO" />
+            android:autoText="false"
+            android:drawableTop="@android:drawable/ic_menu_slideshow"
+            android:text="@string/start"
+            android:textSize="10sp" />
 
-        <ImageButton
-            android:id="@+id/imageButton_start"
+        <Button
+            android:id="@+id/button_stop"
+            style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_slideshow" />
-
-        <ImageButton
-            android:id="@+id/imageButton_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_revert" />
-
-        <ImageButton
-            android:id="@+id/imageButton_help"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@android:drawable/ic_menu_help" />
+            android:autoText="false"
+            android:drawableTop="@android:drawable/ic_menu_close_clear_cancel"
+            android:text="@string/stop"
+            android:textSize="10sp" />
 
     </LinearLayout>
 
@@ -73,6 +65,7 @@
         android:id="@+id/ltv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:listSelector="#0f0"/>
+        android:layout_weight="1"
+        android:listSelector="#dfb" />
 
 </LinearLayout>

@@ -7,4 +7,7 @@
     <string name="apple">Применить</string>
     <string name="close">Закрыть</string>
     <string name="stop">Стоп</string>
+    <string name="btn_add">Добавить</string>
+    <string name="btn_del">Удалить</string>
+    <string name="start">Старт</string>
 </resources>

@@ -20,8 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ActivityItemView"></activity>
-        <!-- <service android:name=".MyJobService" -->
-        <!-- android:permission="android.permission.BIND_JOB_SERVICE" ></service> -->
+
         <receiver
             android:name=".MyReceiver"
             android:directBootAware="true"

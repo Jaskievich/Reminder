@@ -17,10 +17,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -31,9 +33,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -57,15 +61,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lv = (ListView) findViewById(R.id.ltv);
         adp = new AdapterReminder(this, listReminder);
         lv.setAdapter(adp);
-        final ImageButton btn_add = (ImageButton) findViewById(R.id.imageButton_add);
+        final Button btn_add = (Button) findViewById(R.id.button_add);
         btn_add.setOnClickListener(this);
-        final ImageButton btn_save = (ImageButton)findViewById(R.id.imageButton_save);
-        btn_save.setOnClickListener(this);
-        final ImageButton btn_start = (ImageButton)findViewById(R.id.imageButton_start);
+        final Button btn_start = (Button)findViewById(R.id.button_start);
         btn_start.setOnClickListener(this);
-        final ImageButton btn_stop = (ImageButton)findViewById(R.id.imageButton_stop);
+        final Button btn_stop = (Button)findViewById(R.id.button_stop);
         btn_stop.setOnClickListener(this);
-        final ImageButton btn_del = (ImageButton)findViewById(R.id.imageButton_delete);
+        final Button btn_del = (Button)findViewById(R.id.button_delete);
         btn_del.setOnClickListener(this);
 
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -192,20 +194,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.imageButton_add:
+            case R.id.button_add:
                 Intent intent = new Intent(this, ActivityItem.class);
                 startActivityForResult(intent,  listReminder.size());
                 break;
-            case R.id.imageButton_save:
-                saveToFile(FILE_NAME);
-                break;
-            case R.id.imageButton_start:
+            case R.id.button_start:
                 startAlarmTask();
                 break;
-            case R.id.imageButton_stop:
+            case R.id.button_stop:
                 stopAlarm();
                 break;
-            case R.id.imageButton_delete:
+            case R.id.button_delete:
                 DeleteItem();
                 break;
         }
@@ -222,10 +221,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else listReminder.add(item);
         adp.notifyDataSetChanged();
+        saveToFile(FILE_NAME);
 
     }
 
-    class AdapterReminder extends ArrayAdapter<ReminderItem> {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    class AdapterReminder extends ArrayAdapter<ReminderItem>
+    {
+        String myFormat = "MM/dd/yy HH:mm"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+
         public AdapterReminder(@NonNull Context context, ArrayList<ReminderItem> listReminder) {
             super(context, android.R.layout.simple_list_item_2, listReminder);
         }
@@ -244,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Date dt = item.getDate();
             if(dt != null) {
                 ((TextView) convertView.findViewById(android.R.id.text2))
-                        .setText(dt.toString());
+                        .setText(sdf.format(dt));
             }
             return convertView;
             //  return super.getView(position, convertView, parent);

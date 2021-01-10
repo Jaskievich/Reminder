@@ -75,7 +75,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 updateLabelDate(item.getDate());
                 editDescript.setText(item.getDescription());
                 myCalendar.setTime(item.getDate());
-                if( !item.getAudio_file().isEmpty() ) {
+                if( item.getAudio_file()!=null && !item.getAudio_file().isEmpty() ) {
                     File file = new File(item.getAudio_file());
                     if( file.exists() )  textFileAudio.setText(item.getAudio_file());
                 }
@@ -83,7 +83,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void updateLabelDate(Date date) {
+    private void updateLabelDate(Date date)
+    {
         String myFormat = "MM/dd/yy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
         editDate.setText(sdf.format(date));
@@ -123,16 +124,16 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         datePickerDialog.show();
     }
 
-    private String generateAudiFile(String fileName){
-         final String dir = Environment.getExternalStorageDirectory().toString();
-       // final String dir = Environment.getDataDirectory().toString();
+    private String generateAudiFile(String fileName)
+    {
+        final String dir = Environment.getExternalStorageDirectory().toString();
         StringBuilder str = new StringBuilder();
-        if(!fileName.startsWith(dir)) {
+        if (!fileName.startsWith(dir)) {
             str.append(dir);
             str.append("/");
         }
         str.append(fileName);
-        if( !fileName.endsWith(".3gpp") ) str.append(".3gpp");
+        if (!fileName.endsWith(".3gpp")) str.append(".3gpp");
         return str.toString();
     }
 
@@ -165,7 +166,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 dialogAudio.show(getFragmentManager());
                 break;
             case R.id.imageButton_del_File:
-          
+                final String nameFile = textFileAudio.getText().toString();
+                ReminderCtrl.DeleteFile(nameFile);
                 break;
 
         }
@@ -235,7 +237,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             recorder.start();   // Recording is now started
         }
 
-        private void stopRecord()  {
+        private boolean stopRecord()  {
             if( recorder != null){
                 try {
                     recorder.stop();
@@ -243,8 +245,11 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                     recorder.release(); // Now the object cannot be reused
                 } catch (IllegalStateException e){
                     Toast.makeText(context, "Ошибка записи аудио-файла", Toast.LENGTH_LONG).show();
+                    return false;
                 }
+                return true;
             }
+            return false;
         }
 
         private void cancelRecord()
@@ -260,7 +265,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                     .setPositiveButton(R.string.stop, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // FIRE ZE MISSILES!
-                            stopRecord();
+                            if( stopRecord() ) textFileAudio.setText(pathName);
                         }
                     })
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -269,6 +274,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                             cancelRecord();
                         }
                     });
+      //      builder.setView(R.drawable.ic_launcher_background);
             // Create the AlertDialog object and return it
             return builder.create();
         }

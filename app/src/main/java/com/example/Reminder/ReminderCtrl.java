@@ -14,6 +14,13 @@ public class ReminderCtrl
 {
     private ArrayList<ReminderItem> listReminder = null;
 
+    static public void DeleteFile(String nameFile)
+    {
+        if(nameFile.isEmpty()) return;
+        File file = new File(nameFile);
+        if( file.exists()) file.delete();
+    }
+
     public ArrayList<ReminderItem> getListReminder() {
         return listReminder;
     }
@@ -32,9 +39,11 @@ public class ReminderCtrl
         });
     }
 
+
     public boolean delItemByIndex(int index){
         if( index > -1 && index < listReminder.size() ){
-            listReminder.get(index).deleteAudioFile();
+            final String nameFile = listReminder.get(index).getAudio_file();
+            if( nameFile != null) DeleteFile(nameFile);
             listReminder.remove(index);
             return true;
         }
