@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -124,7 +125,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         datePickerDialog.show();
     }
 
-    private String generateAudiFile(String fileName)
+    private String absolutePathAudiFile(String fileName)
     {
         final String dir = Environment.getExternalStorageDirectory().toString();
         StringBuilder str = new StringBuilder();
@@ -135,6 +136,20 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         str.append(fileName);
         if (!fileName.endsWith(".3gpp")) str.append(".3gpp");
         return str.toString();
+    }
+
+    private String getDateTimeAsNameFile()
+    {
+        StringBuilder strb = new StringBuilder();
+        strb.append("f");
+        strb.append(editDate.getText().toString());
+        strb.append("-");
+        strb.append(editTime.getText().toString());
+        for(int i = 0; i < strb.length(); ++i) {
+            char ch = strb.charAt(i);
+            if ( ch == '/' || ch == '-' || ch == ':') strb.setCharAt(i, '_');
+        }
+        return strb.toString();
     }
 
 
@@ -162,14 +177,19 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.img_btn_audio:
                 if( dialogAudio == null ) dialogAudio = new MyDialogAudio(this);
-                dialogAudio.setPathName(generateAudiFile(textFileAudio.getText().toString()));
+                String fileName = textFileAudio.getText().toString();
+                if(fileName.isEmpty()){
+                    fileName = getDateTimeAsNameFile();
+                }
+                dialogAudio.setPathName(absolutePathAudiFile(fileName));
                 dialogAudio.show(getFragmentManager());
                 break;
             case R.id.imageButton_del_File:
                 final String nameFile = textFileAudio.getText().toString();
                 ReminderCtrl.DeleteFile(nameFile);
                 break;
-
+            default:
+                throw new IllegalStateException("Unexpected value: " + v.getId());
         }
     }
 
@@ -274,7 +294,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                             cancelRecord();
                         }
                     });
-      //      builder.setView(R.drawable.ic_launcher_background);
+            //builder.setView(R.);
             // Create the AlertDialog object and return it
             return builder.create();
         }
