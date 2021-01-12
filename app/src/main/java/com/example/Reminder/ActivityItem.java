@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.transition.Transition;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -187,6 +188,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             case R.id.imageButton_del_File:
                 final String nameFile = textFileAudio.getText().toString();
                 ReminderCtrl.DeleteFile(nameFile);
+                textFileAudio.setText("");
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + v.getId());
@@ -281,6 +283,9 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater factory = LayoutInflater.from(getActivity());
+            final View view = factory.inflate(R.layout.dialog_audio, null);
+            builder.setView(view);
             builder.setMessage("Говорите")
                     .setPositiveButton(R.string.stop, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
