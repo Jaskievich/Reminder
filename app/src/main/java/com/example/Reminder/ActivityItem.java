@@ -60,13 +60,14 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         final ImageButton btn_date = (ImageButton)findViewById(R.id.imageButton_date);
         final Button btn_cancel = (Button) findViewById(R.id.button_cancel);
         final ImageButton btn_del_file = (ImageButton) findViewById(R.id.imageButton_del_File);
+        final ImageButton btn_audio = (ImageButton) findViewById(R.id.img_btn_audio);
+
         btn_date.setOnClickListener(this);
         btn_app.setOnClickListener(this);
         btn_cancel.setOnClickListener(this);
         btn_del_file.setOnClickListener(this);
         editDate.setOnClickListener(this);
         editTime.setOnClickListener(this);
-        final ImageButton btn_audio = (ImageButton) findViewById(R.id.img_btn_audio);
         btn_audio.setOnClickListener(this);
 
         Bundle arguments = getIntent().getExtras();

@@ -10,4 +10,7 @@
     <string name="btn_add">Добавить</string>
     <string name="btn_del">Удалить</string>
     <string name="start">Старт</string>
+    <string name="quest_del">Удалить запись?</string>
+    <string name="ok">Да</string>
+    <string name="no">Нет</string>
 </resources>

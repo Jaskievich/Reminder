@@ -7,17 +7,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -43,6 +46,7 @@ import java.util.Stack;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final static String FILE_NAME = "content.txt";
+    private Button btn_start, btn_stop, btn_del;
     private ReminderCtrl reminderCtrl = new ReminderCtrl();
     private ArrayList<ReminderItem> listReminder = null;
     private  ListView lv = null;
@@ -63,12 +67,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lv.setAdapter(adp);
         final Button btn_add = (Button) findViewById(R.id.button_add);
         btn_add.setOnClickListener(this);
-        final Button btn_start = (Button)findViewById(R.id.button_start);
+        btn_start = (Button)findViewById(R.id.button_start);
         btn_start.setOnClickListener(this);
-        final Button btn_stop = (Button)findViewById(R.id.button_stop);
+        btn_start.setEnabled(listReminder.size() > 0);
+        btn_stop = (Button)findViewById(R.id.button_stop);
         btn_stop.setOnClickListener(this);
-        final Button btn_del = (Button)findViewById(R.id.button_delete);
+        btn_stop.setEnabled(listReminder.size() > 0);
+        btn_del = (Button)findViewById(R.id.button_delete);
         btn_del.setOnClickListener(this);
+        btn_del.setEnabled(false);
 
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -85,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 curr_pos = position;
+                if( !btn_del.isEnabled()) btn_del.setEnabled(true);
             }
         });
 
@@ -92,11 +100,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 curr_pos = position;
+                if( !btn_del.isEnabled()) btn_del.setEnabled(true);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                if( btn_del.isEnabled()) btn_del.setEnabled(false);
             }
         });
 
@@ -175,16 +184,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     */
 
-    private void DeleteItem()
-    {
-       if( reminderCtrl.delItemByIndex(curr_pos) ) {
-           adp.notifyDataSetChanged();
-           if(curr_pos == listReminder.size()) {
-               lv.requestFocusFromTouch();
-               lv.setSelection(curr_pos - 1);
-           }
+    private void DeleteItem() {
 
-       }
+        AlertDialog.Builder build = new AlertDialog.Builder(this);
+        build.setMessage(R.string.quest_del).setCancelable(false)
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (reminderCtrl.delItemByIndex(curr_pos)) {
+                            adp.notifyDataSetChanged();
+                            if (curr_pos == listReminder.size()) {
+                                lv.requestFocusFromTouch();
+                                lv.setSelection(curr_pos - 1);
+                            }
+                            saveToFile(FILE_NAME);
+                            if( reminderCtrl.getListReminder().size() == 0 ){
+                                if( btn_start.isEnabled() ) btn_start.setEnabled(false);
+                                if( btn_del.isEnabled() ) btn_del.setEnabled(false);
+                            }
+                        }
+                    }
+                }
+
+        ).setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        final AlertDialog dlg = build.create();
+        dlg.show();
     }
 
     private void stopAlarm(){
@@ -222,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else listReminder.add(item);
         adp.notifyDataSetChanged();
         saveToFile(FILE_NAME);
-
+        if( !btn_start.isEnabled() )  btn_start.setEnabled(true);
     }
 
     @Override
@@ -230,6 +260,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        return super.onOptionsItemSelected(item);
     }
 
     class AdapterReminder extends ArrayAdapter<ReminderItem>
