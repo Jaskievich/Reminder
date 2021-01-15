@@ -10,10 +10,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Stack;
 
+/*
+    Класс управления списком заданий
+ */
 public class ReminderCtrl
 {
     private ArrayList<ReminderItem> listReminder = null;
 
+    // Удалить файл
     static public void DeleteFile(String nameFile)
     {
         if(nameFile.isEmpty()) return;
@@ -39,7 +43,7 @@ public class ReminderCtrl
         });
     }
 
-
+    // Удалить запись по индексу
     public boolean delItemByIndex(int index){
         if( index > -1 && index < listReminder.size() ){
             final String nameFile = listReminder.get(index).getAudio_file();
@@ -50,6 +54,7 @@ public class ReminderCtrl
         return false;
     }
 
+    // Получить актуальные записи
     public ArrayList<ReminderItem> getListActualReminder(){
         sort();
         ArrayList<ReminderItem> listRes = new ArrayList<>();
@@ -59,6 +64,20 @@ public class ReminderCtrl
             if( date.getTime() < item.getDate().getTime() ) listRes.add(item);
         }
         return listRes;
+    }
+
+    // Удалить старые задания
+    public void deleteOldRecord(){
+        Date date = new Date();
+        int i = 0;
+        while( i < listReminder.size() ){
+            ReminderItem item = listReminder.get(i);
+            if( date.getTime() > item.getDate().getTime()) {
+                if( item.getAudio_file() != null) DeleteFile(item.getAudio_file());
+                listReminder.remove(i);
+            }
+            else i++;
+        }
     }
  /*   public Stack<ReminderItem> getStackActualReminder(){
         sort();

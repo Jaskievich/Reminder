@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -266,6 +267,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        if( item.getItemId() == R.id.clear_settings){
+            reminderCtrl.deleteOldRecord();
+            adp.notifyDataSetChanged();
+            saveToFile(FILE_NAME);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -273,9 +279,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         String myFormat = "MM/dd/yy HH:mm"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+        Date date = new Date();
 
         public AdapterReminder(@NonNull Context context, ArrayList<ReminderItem> listReminder) {
-            super(context, android.R.layout.simple_list_item_2, listReminder);
+            super(context, R.layout.list_item, listReminder);
         }
 
         @NonNull
@@ -285,15 +292,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ReminderItem item = getItem(position);
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext())
-                        .inflate(android.R.layout.simple_list_item_2, null);
+                        .inflate(/*android.R.layout.simple_list_item_2*/R.layout.list_item, null);
             }
-            ((TextView) convertView.findViewById(android.R.id.text1))
+            ((TextView) convertView.findViewById(R.id.text_name))
                     .setText(item.getTitle());
             Date dt = item.getDate();
             if(dt != null) {
-                ((TextView) convertView.findViewById(android.R.id.text2))
-                        .setText(sdf.format(dt));
+                ((TextView) convertView.findViewById(R.id.text_date)).setText(sdf.format(dt));
+                ImageView imageView = (ImageView) convertView.findViewById(R.id.imageView_2);
+                if(date.getTime() < dt.getTime()) imageView.setImageResource(android.R.drawable.star_big_on);
+                else imageView.setImageResource(android.R.drawable.star_big_off);
             }
+            ImageView imageViewAudio = (ImageView) convertView.findViewById(R.id.imageView_1);
+            if( item.getAudio_file() != null && !item.getAudio_file().isEmpty()){
+                imageViewAudio.setImageResource(android.R.drawable.ic_btn_speak_now);
+            }
+            else  imageViewAudio.setImageResource(0);;
+
             return convertView;
             //  return super.getView(position, convertView, parent);
         }
