@@ -13,4 +13,5 @@
     <string name="quest_del">Удалить запись?</string>
     <string name="ok">Да</string>
     <string name="no">Нет</string>
+    <string name="descr">Описание:</string>
 </resources>

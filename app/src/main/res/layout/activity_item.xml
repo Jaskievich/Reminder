@@ -68,6 +68,13 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textViewDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="@string/descr"
+        android:textSize="18sp" />
     <EditText
         android:id="@+id/editTextMultiLine_descr"
         android:layout_width="match_parent"

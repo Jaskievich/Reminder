@@ -70,6 +70,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         editTime.setOnClickListener(this);
         btn_audio.setOnClickListener(this);
 
+
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
             ReminderItem item = (ReminderItem) arguments.getSerializable(ReminderItem.class.getSimpleName());
