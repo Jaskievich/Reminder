@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class ReminderItem implements Serializable
 {
+    private int id;
     private String title;
     private String description;
     private Date date;
@@ -17,6 +18,10 @@ public class ReminderItem implements Serializable
         this.title = title;
         this.description = description;
         this.date = date;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
