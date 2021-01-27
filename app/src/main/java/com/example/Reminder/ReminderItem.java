@@ -19,6 +19,9 @@ public class ReminderItem implements Serializable
         this.description = description;
         this.date = date;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;

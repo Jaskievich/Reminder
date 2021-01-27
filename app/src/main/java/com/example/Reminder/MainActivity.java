@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private  ListView lv = null;
     private AdapterReminder adp;
     private int curr_pos = 0;
+    private  Cursor cursor = null;
     private RemindDBHelper remindDBHelper;
 
     @Override
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         remindDBHelper = new RemindDBHelper(this);
 
         lv = (ListView) findViewById(R.id.ltv);
-        Cursor cursor =  remindDBHelper.getAllTable();
+        cursor =  remindDBHelper.getAllTable();
         adp = new AdapterReminder(this,cursor, true);
         lv.setAdapter(adp);
         final Button btn_add = (Button) findViewById(R.id.button_add);
@@ -78,16 +79,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_del.setOnClickListener(this);
         btn_del.setEnabled(false);
 
-     /*   lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                ReminderItem item = listReminder.get(position);
+                ReminderItem item =  adp.getItem(position);
                 Intent intent = new Intent(MainActivity.this, ActivityItem.class);
                 intent.putExtra(ReminderItem.class.getSimpleName(), item);
                 startActivityForResult(intent, position);
                 return false;
             }
-        });*/
+        });
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -112,16 +113,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cursor.close();
+        remindDBHelper.close();
+    }
+
     void startAlarmTask()
     {
-//        ArrayList<ReminderItem> listActualReminder = reminderCtrl.getListActualReminder();
-//        if (listActualReminder.size() == 0) return;
-//        adp.notifyDataSetChanged();
-//        Collections.reverse(listActualReminder);
-//        int index_last = listActualReminder.size() - 1;
-//        ReminderItem item = listActualReminder.get(index_last);
-//        MyReceiver.startNewAlarmTask(this, listActualReminder, item.getDate());
-//        Toast.makeText(this, "Сигнализация установлена", Toast.LENGTH_SHORT).show();
+        ReminderItem item = remindDBHelper.getActualFistItem();
+        if( item == null ) return;
+        MyReceiver.startNewAlarmTask(this, item, item.getDate());
+        Toast.makeText(this, "Сигнализация установлена "+item.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
     private void DeleteItem() {
@@ -132,7 +136,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                ReminderItem item = adp.getItem(curr_pos);
+                                remindDBHelper.deleteItem(item.getId());
+                                cursor = remindDBHelper.getAllTable();
+                                adp.changeCursor(cursor);
                             }
                         }
 
@@ -176,8 +183,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ReminderItem item = (ReminderItem) data.getSerializableExtra(ReminderItem.class.getSimpleName());
         if(item.getId() == 0)  remindDBHelper.insertItem(item);
         else remindDBHelper.updateItem(item);
-        adp.notifyDataSetChanged();
-     //   adp.changeCursor(todoCursor);
+        cursor = remindDBHelper.getAllTable();
+        adp.changeCursor(cursor);
         if( !btn_start.isEnabled() )  btn_start.setEnabled(true);
     }
 
@@ -193,8 +200,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // TODO Auto-generated method stub
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
         if( item.getItemId() == R.id.clear_settings){
-        //    reminderCtrl.deleteOldRecord();
-            adp.notifyDataSetChanged();
+            remindDBHelper.deleteOldItem();
+            cursor = remindDBHelper.getAllTable();
+            adp.changeCursor(cursor);
 
         }
         return super.onOptionsItemSelected(item);
@@ -208,6 +216,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         public AdapterReminder(Context context, Cursor c, boolean flags) {
             super(context, c, flags);
+        }
+
+        public ReminderItem getItem(int position) {
+            Cursor cr = (Cursor) super.getItem(position);
+            if( cr != null && cr.getCount() > 0){
+                return RemindDBHelper.CursorToItem(cr);
+            }
+            return null;
         }
 
         @Override

@@ -34,12 +34,8 @@ public class MyReceiver extends BroadcastReceiver
         // an Intent broadcast.
         Bundle bundle = _intent.getBundleExtra("listBundle");
         if (bundle == null) return;
-        ArrayList<ReminderItem> listReminder = (ArrayList<ReminderItem>) bundle.getSerializable("listRemind");
-        if (listReminder == null || listReminder.size() == 0) return;
-        // Взять последнюю запись
-        int index_last = listReminder.size() - 1;
-        ReminderItem item = listReminder.get(index_last);
-        listReminder.remove(index_last);
+        ReminderItem item = (ReminderItem) bundle.getSerializable("item");
+        if ( item == null ) return;
         // Разбудить экран
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         @SuppressLint("InvalidWakeLockTag")
@@ -51,20 +47,20 @@ public class MyReceiver extends BroadcastReceiver
         context.startActivity(intent);
         wakeLock.release();
         // Запустить следующее задание
-        index_last = listReminder.size() - 1;
-        if (index_last > -1) {
-            ReminderItem item_peek = listReminder.get(index_last);
-            startNewAlarmTask(context, listReminder, item_peek.getDate());
+        RemindDBHelper remindDBHelper = new RemindDBHelper(context);
+        ReminderItem item_peek = remindDBHelper.getActualFistItem();
+        if (item_peek != null ) {
+            startNewAlarmTask(context, item_peek, item_peek.getDate());
         }
     }
 
 
-    static public void startNewAlarmTask(Context context, ArrayList<ReminderItem> listReminder, Date date)
+    static public void startNewAlarmTask(Context context, ReminderItem item, Date date)
     {
         Intent intent = new Intent(context, MyReceiver.class);
         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("listRemind", listReminder);
+        bundle.putSerializable("item", item);
         intent.putExtra("listBundle", bundle);
         PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
@@ -86,3 +82,67 @@ public class MyReceiver extends BroadcastReceiver
     }
 
 }
+
+
+//public class MyReceiver extends BroadcastReceiver
+//{
+//
+//    @Override
+//    public void onReceive(Context context, Intent _intent)
+//    {
+//        // TODO: This method is called when the BroadcastReceiver is receiving
+//        // an Intent broadcast.
+//        Bundle bundle = _intent.getBundleExtra("listBundle");
+//        if (bundle == null) return;
+//        ArrayList<ReminderItem> listReminder = (ArrayList<ReminderItem>) bundle.getSerializable("listRemind");
+//        if (listReminder == null || listReminder.size() == 0) return;
+//        // Взять последнюю запись
+//        int index_last = listReminder.size() - 1;
+//        ReminderItem item = listReminder.get(index_last);
+//        listReminder.remove(index_last);
+//        // Разбудить экран
+//        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+//        @SuppressLint("InvalidWakeLockTag")
+//        PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
+//        wakeLock.acquire();
+//        Intent intent = new Intent(context, ActivityItemView.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.putExtra(ReminderItem.class.getSimpleName(), item);
+//        context.startActivity(intent);
+//        wakeLock.release();
+//        // Запустить следующее задание
+//        index_last = listReminder.size() - 1;
+//        if (index_last > -1) {
+//            ReminderItem item_peek = listReminder.get(index_last);
+//            startNewAlarmTask(context, listReminder, item_peek.getDate());
+//        }
+//    }
+//
+//
+//    static public void startNewAlarmTask(Context context, ArrayList<ReminderItem> listReminder, Date date)
+//    {
+//        Intent intent = new Intent(context, MyReceiver.class);
+//        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+//        Bundle bundle = new Bundle();
+//        bundle.putSerializable("listRemind", listReminder);
+//        intent.putExtra("listBundle", bundle);
+//        PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            am.setExact(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
+//        }
+//    }
+//
+//    static public void stopAlarmTask(Context context)
+//    {
+//        Intent intent = new Intent(context, MyReceiver.class);
+//        PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_NO_CREATE);
+//        if (pi != null) {
+//            AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+//            am.cancel(pi);
+//        }
+//    }
+//
+//}

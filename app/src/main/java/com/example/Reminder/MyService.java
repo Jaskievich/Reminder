@@ -35,6 +35,7 @@ public class MyService extends Service {
     public void onDestroy() {
         Toast.makeText(getApplicationContext(), "Служба уничтожена", Toast.LENGTH_SHORT).show();
         Log.d(LOG_TAG, "onDestroy");
+
     }
 
   /*  @Override

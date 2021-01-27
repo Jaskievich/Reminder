@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.Date;
+
 public class RemindDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "ReminderDB.db";
@@ -26,7 +28,23 @@ public class RemindDBHelper extends SQLiteOpenHelper {
                     COLUMN_DATE +" NUMERIC NOT NULL," +
                     COLUMN_AFILE + " TEXT)";
 
-    private static final String sortOrder = COLUMN_DATE + " DESC";
+    private static final String sortOrder = COLUMN_DATE + " ASC";
+
+    public static ReminderItem CursorToItem(Cursor cursor){
+        ReminderItem item = new ReminderItem();
+        int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
+        item.setId(id);
+        String title = cursor.getString( cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_NAME) );
+        item.setTitle(title);
+        String descr = cursor.getString( cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_DESCR) );
+        item.setDescription(descr);
+        long tm = cursor.getLong(cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_DATE));
+        Date dt = new Date(tm);
+        item.setDate(dt);
+        String audi_file = cursor.getString( cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_AFILE) );
+        item.setAudio_file(audi_file);
+        return item;
+    }
 
 
 
@@ -63,13 +81,46 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DESCR, item.getDescription());
         contentValues.put(COLUMN_DATE, item.getDate().getTime());
         contentValues.put(COLUMN_AFILE, item.getAudio_file());
-        db.update(TABLE_NAME, contentValues, "id = ? ", new String[] { Integer.toString(item.getId()) } );
+        db.update(TABLE_NAME, contentValues, "_id = ? ", new String[] { Integer.toString(item.getId()) } );
         return true;
     }
 
+    public ReminderItem getActualFistItem(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Date dt = new Date();
+        Cursor res =  db.query(TABLE_NAME,null,"date > ?",new String[] { Long.toString(dt.getTime()) },null,null, sortOrder );
+        if( res!=null && res.getCount() > 0){
+            res.moveToFirst();
+            ReminderItem item = CursorToItem(res);
+            res.close();
+            return item;
+        }
+        return null;
+    }
+
+    /*
+        Получить всю таблицу
+    */
     public Cursor getAllTable() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.query(TABLE_NAME,null,null,null,null,null, sortOrder );
         return res;
+    }
+
+   /*
+        Удалить запись по id
+   */
+    public Integer deleteItem(int id){
+        SQLiteDatabase db=this.getWritableDatabase();
+        return db.delete(TABLE_NAME,"_id = ?",new String[] { Integer.toString(id) });
+    }
+
+    /*
+        Удалить старые записи
+    */
+    public void deleteOldItem(){
+        SQLiteDatabase db=this.getWritableDatabase();
+        Date dt = new Date();
+        db.delete(TABLE_NAME,"date < ?",new String[] { Long.toString(dt.getTime()) });
     }
 }
