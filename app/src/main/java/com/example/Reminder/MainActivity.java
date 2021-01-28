@@ -162,10 +162,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if( resultCode != RESULT_OK || data == null ) return;
         ReminderItem item = (ReminderItem) data.getSerializableExtra(ReminderItem.class.getSimpleName());
-        if(item.getId() == 0)  remindDBHelper.insertItem(item);
-        else remindDBHelper.updateItem(item);
+        if(item.getId() > 0) remindDBHelper.updateItem(item);
+        else remindDBHelper.insertItem(item);
         cursor = remindDBHelper.getAllTable();
         adp.changeCursor(cursor);
+        // Определим позицию записи по id
+//        int activePosition = 0;
+//        while( cursor.moveToNext()){
+//            if( cursor.getInt(0) == item.getId()) break;
+//            activePosition++;
+//        }
+//        lv.performItemClick(adp.getView(activePosition, null, null), activePosition, adp.getItemId(activePosition));
         if( !btn_start.isEnabled() )  btn_start.setEnabled(true);
     }
 
@@ -181,11 +188,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // TODO Auto-generated method stub
         Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
         if( item.getItemId() == R.id.clear_settings){
-
             remindDBHelper.deleteOldItem();
             cursor = remindDBHelper.getAllTable();
             adp.changeCursor(cursor);
-
         }
         return super.onOptionsItemSelected(item);
     }

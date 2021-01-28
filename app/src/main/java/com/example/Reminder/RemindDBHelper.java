@@ -140,4 +140,5 @@ public class RemindDBHelper extends SQLiteOpenHelper {
             cursor.close();
         }
     }
+
 }
