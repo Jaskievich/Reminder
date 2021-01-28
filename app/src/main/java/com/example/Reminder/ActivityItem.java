@@ -46,6 +46,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
     private TimePickerDialog timePickerDialog = null;
     private MyDialogAudio dialogAudio = null;
     private EditText textFileAudio;
+    private ReminderItem item = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
-            ReminderItem item = (ReminderItem) arguments.getSerializable(ReminderItem.class.getSimpleName());
+            item = (ReminderItem) arguments.getSerializable(ReminderItem.class.getSimpleName());
             if (item != null) {
                 editTitle.setText(item.getTitle());
                 updateLabelDate(item.getDate());
@@ -106,7 +107,8 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "Введите дату и время", Toast.LENGTH_LONG).show();
             return;
         }
-        ReminderItem item = new ReminderItem();
+     //   ReminderItem item = new ReminderItem();
+        if( item == null )item = new ReminderItem();
         item.setTitle(editTitle.getText().toString());
         item.setDescription(editDescript.getText().toString());
         item.setDate(myCalendar.getTime());
@@ -189,7 +191,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.imageButton_del_File:
                 final String nameFile = textFileAudio.getText().toString();
-                ReminderCtrl.DeleteFile(nameFile);
+                if( nameFile!= null ) MyUtility.DeleteFile(nameFile);
                 textFileAudio.setText("");
                 break;
             default:

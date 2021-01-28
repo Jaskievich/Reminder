@@ -46,8 +46,6 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         return item;
     }
 
-
-
     public RemindDBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
@@ -85,12 +83,14 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+     /*
+        Получить первую актуальную запись
+    */
     public ReminderItem getActualFistItem(){
         SQLiteDatabase db = this.getReadableDatabase();
         Date dt = new Date();
         Cursor res =  db.query(TABLE_NAME,null,"date > ?",new String[] { Long.toString(dt.getTime()) },null,null, sortOrder );
-        if( res!=null && res.getCount() > 0){
-            res.moveToFirst();
+        if( res!=null &&  res.moveToFirst() ){
             ReminderItem item = CursorToItem(res);
             res.close();
             return item;
@@ -119,8 +119,25 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         Удалить старые записи
     */
     public void deleteOldItem(){
+        deleteOldAudioFileItem();
         SQLiteDatabase db=this.getWritableDatabase();
         Date dt = new Date();
         db.delete(TABLE_NAME,"date < ?",new String[] { Long.toString(dt.getTime()) });
+    }
+
+    /*
+        Удалить старые аудио-файлы
+    */
+    public void deleteOldAudioFileItem(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Date dt = new Date();
+        Cursor cursor =  db.query(TABLE_NAME,null,"date < ?", new String[] { Long.toString(dt.getTime())},null,null, sortOrder );
+        if( cursor != null ){
+            while( cursor.moveToNext() ){
+                String audi_file = cursor.getString( cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_AFILE) );
+                if( audi_file!=null ) MyUtility.DeleteFile(audi_file);
+            }
+            cursor.close();
+        }
     }
 }
