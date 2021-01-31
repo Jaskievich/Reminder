@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class RemindDBHelper extends SQLiteOpenHelper {
@@ -103,16 +104,28 @@ public class RemindDBHelper extends SQLiteOpenHelper {
     */
     public Cursor getAllTable() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.query(TABLE_NAME,null,null,null,null,null, sortOrder );
+        Cursor res =  db.query(TABLE_NAME,null,null,null,null,null, null );
         return res;
+    }
+
+    public ArrayList<ReminderItem> getAllTableSort() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<ReminderItem> listItem = new ArrayList<>();
+        Cursor cursor =  db.query(TABLE_NAME,null,null,null,null,null, sortOrder );
+        while (cursor.moveToNext()){
+            ReminderItem item = CursorToItem(cursor);
+            listItem.add(item);
+        }
+        cursor.close();
+        return listItem;
     }
 
    /*
         Удалить запись по id
    */
-    public Integer deleteItem(int id){
+    public void deleteItem(int id){
         SQLiteDatabase db=this.getWritableDatabase();
-        return db.delete(TABLE_NAME,"_id = ?",new String[] { Integer.toString(id) });
+        db.delete(TABLE_NAME,"_id = ?",new String[] { Integer.toString(id) });
     }
 
     /*
@@ -139,6 +152,11 @@ public class RemindDBHelper extends SQLiteOpenHelper {
             }
             cursor.close();
         }
+    }
+
+    public void clearTable(){
+        SQLiteDatabase db=this.getWritableDatabase();
+        db.delete(TABLE_NAME, null, null);
     }
 
 }

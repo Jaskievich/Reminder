@@ -56,6 +56,10 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         editDescript = (EditText)findViewById(R.id.editTextMultiLine_descr);
         editDate = (EditText) findViewById(R.id.editText_date);
         editTime = (EditText) findViewById(R.id.editTextTime);
+        editDate.setFocusable(false);
+        editDate.setClickable(true);
+        editTime.setFocusable(false);
+        editTime.setClickable(true);
         textFileAudio = (EditText) findViewById(R.id.editTextFileAudio);
         final Button btn_app = (Button) findViewById(R.id.button_app);
         final ImageButton btn_date = (ImageButton)findViewById(R.id.imageButton_date);
@@ -112,9 +116,15 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         item.setTitle(editTitle.getText().toString());
         item.setDescription(editDescript.getText().toString());
         item.setDate(myCalendar.getTime());
-        if( dialogAudio!=null ) {
-            item.setAudio_file(dialogAudio.getPathName());
+        if( dialogAudio != null ) {
+            item.setAudio_file(dialogAudio.getPathName() );
         }
+        String file_audio = textFileAudio.getText().toString();
+        if( !file_audio.isEmpty() ) {
+            File file = new File(file_audio);
+            if (!file.exists()) item.setAudio_file("");
+        }
+        else item.setAudio_file("");
         Intent intent = new Intent();
         intent.putExtra(ReminderItem.class.getSimpleName(), item);
         setResult(RESULT_OK, intent);

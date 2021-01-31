@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private  ListView lv = null;
     private AdapterReminder adp;
     private int curr_pos = 0;
-    private  Cursor cursor = null;
     private RemindDBHelper remindDBHelper;
 
     @Override
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         remindDBHelper = new RemindDBHelper(this);
 
         lv = (ListView) findViewById(R.id.ltv);
-        cursor =  remindDBHelper.getAllTable();
+        Cursor cursor =  remindDBHelper.getAllTable();
         adp = new AdapterReminder(this,cursor, true);
         lv.setAdapter(adp);
         final Button btn_add = (Button) findViewById(R.id.button_add);
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cursor.close();
+        adp.getCursor().close();
         remindDBHelper.close();
     }
 
@@ -119,8 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 ReminderItem item = adp.getItem(curr_pos);
                                 if( item.getAudio_file()!= null ) MyUtility.DeleteFile(item.getAudio_file());
                                 remindDBHelper.deleteItem(item.getId());
-                                cursor = remindDBHelper.getAllTable();
-                                adp.changeCursor(cursor);
+                                adp.changeCursor(remindDBHelper.getAllTable());
                             }
                         }
 
@@ -164,15 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ReminderItem item = (ReminderItem) data.getSerializableExtra(ReminderItem.class.getSimpleName());
         if(item.getId() > 0) remindDBHelper.updateItem(item);
         else remindDBHelper.insertItem(item);
-        cursor = remindDBHelper.getAllTable();
-        adp.changeCursor(cursor);
-        // Определим позицию записи по id
-//        int activePosition = 0;
-//        while( cursor.moveToNext()){
-//            if( cursor.getInt(0) == item.getId()) break;
-//            activePosition++;
-//        }
-//        lv.performItemClick(adp.getView(activePosition, null, null), activePosition, adp.getItemId(activePosition));
+        adp.changeCursor(remindDBHelper.getAllTable());
         if( !btn_start.isEnabled() )  btn_start.setEnabled(true);
     }
 
@@ -186,11 +177,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // TODO Auto-generated method stub
-        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-        if( item.getItemId() == R.id.clear_settings){
-            remindDBHelper.deleteOldItem();
-            cursor = remindDBHelper.getAllTable();
-            adp.changeCursor(cursor);
+   //     Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.clear_settings:
+                remindDBHelper.deleteOldItem();
+                adp.changeCursor(remindDBHelper.getAllTable());
+                break;
+            case R.id.sort_settings:
+                ArrayList<ReminderItem> listItem = remindDBHelper.getAllTableSort();
+                remindDBHelper.clearTable();
+                for(ReminderItem it : listItem){
+                    remindDBHelper.insertItem(it);
+                }
+                adp.changeCursor(remindDBHelper.getAllTable());
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -52,6 +52,7 @@ public class MyReceiver extends BroadcastReceiver
         if (item_peek != null ) {
             startNewAlarmTask(context, item_peek, item_peek.getDate());
         }
+        remindDBHelper.close();
     }
 
 

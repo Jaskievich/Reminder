@@ -10,7 +10,11 @@
         android:orderInCategory="2"
         android:title="Очистить старые записи" />
     <item
-        android:id="@+id/help_settings"
+        android:id="@+id/sort_settings"
         android:orderInCategory="3"
+        android:title="Сортировать по дате" />
+    <item
+        android:id="@+id/help_settings"
+        android:orderInCategory="4"
         android:title="Помощь" />
 </menu>
