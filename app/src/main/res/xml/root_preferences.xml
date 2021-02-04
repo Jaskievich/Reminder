@@ -3,19 +3,17 @@
 
     <PreferenceCategory app:title="@string/messages_header">
 
-<!--
-        <RingtonePreference
+  <!--      <RingtonePreference
             android:showDefault="true"
             android:key="ringtone_preference_1"
             android:title="Настройка рингтона"
             android:summary="Pick a tone, any tone" />-->
 
-        <EditTextPreference
-            android:defaultValue="Default value"
-            android:key="edit_text_preference_1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Edit text preference" />
+
+        <RingtonePreference
+
+            android:key="ringtone_preference_1"
+            android:title="Ringtone preference" />
     </PreferenceCategory>
 
 </PreferenceScreen>
