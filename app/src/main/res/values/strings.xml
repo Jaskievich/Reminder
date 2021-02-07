@@ -19,5 +19,16 @@
     <!-- Preference Titles -->
     <string name="messages_header">Будильник</string>
 
+    <string-array name="entries">
+        <item>one</item>
+        <item>two</item>
+        <item>three</item>
+    </string-array>
+    <string-array name="entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 
 </resources>

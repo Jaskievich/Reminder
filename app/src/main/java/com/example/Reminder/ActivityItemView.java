@@ -1,8 +1,10 @@
 package com.example.Reminder;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -22,8 +24,23 @@ public class ActivityItemView extends AppCompatActivity {
     private Ringtone ringtone = null;
     private MediaPlayer mediaPlayer = null;
 
+//    private void makeSoundDefault()
+//    {
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+//        String alarmUriStr = sp.getString("ringtone_preference_1", null);
+//        Uri alarmUri = null;
+//        if( alarmUriStr == null ) alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+//        else alarmUri = Uri.parse(alarmUriStr);
+//        if (alarmUri == null) {
+//            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+//        }
+//        ringtone = RingtoneManager.getRingtone(this, alarmUri);
+//        ringtone.play();
+//    }
+
     private void makeSoundDefault()
     {
+
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null) {
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -31,6 +48,7 @@ public class ActivityItemView extends AppCompatActivity {
         ringtone = RingtoneManager.getRingtone(this, alarmUri);
         ringtone.play();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
