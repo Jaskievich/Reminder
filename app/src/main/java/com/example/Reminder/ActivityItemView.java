@@ -24,30 +24,30 @@ public class ActivityItemView extends AppCompatActivity {
     private Ringtone ringtone = null;
     private MediaPlayer mediaPlayer = null;
 
-//    private void makeSoundDefault()
-//    {
-//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-//        String alarmUriStr = sp.getString("ringtone_preference_1", null);
-//        Uri alarmUri = null;
-//        if( alarmUriStr == null ) alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-//        else alarmUri = Uri.parse(alarmUriStr);
-//        if (alarmUri == null) {
-//            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-//        }
-//        ringtone = RingtoneManager.getRingtone(this, alarmUri);
-//        ringtone.play();
-//    }
-
     private void makeSoundDefault()
     {
-
-        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String alarmUriStr = sp.getString("ringtone_preference_1", null);
+        Uri alarmUri = null;
+        if( alarmUriStr == null ) alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        else alarmUri = Uri.parse(alarmUriStr);
         if (alarmUri == null) {
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         }
         ringtone = RingtoneManager.getRingtone(this, alarmUri);
         ringtone.play();
     }
+
+//    private void makeSoundDefault()
+//    {
+//
+//        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+//        if (alarmUri == null) {
+//            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+//        }
+//        ringtone = RingtoneManager.getRingtone(this, alarmUri);
+//        ringtone.play();
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

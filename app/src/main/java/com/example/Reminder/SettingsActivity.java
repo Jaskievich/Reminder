@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import java.util.ArrayList;
@@ -51,7 +52,15 @@ public class SettingsActivity extends AppCompatActivity {
             CharSequence[] entryValues =  list_entryValues.toArray(new CharSequence[list_entryValues.size()]);
             listPreference.setEntries(entries);
             listPreference.setEntryValues(entryValues);
-       //     listPreference.setDefaultValue("1");
+
+            listPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    listPreference.setSummary(preference.getTitle());
+                    return false;
+                }
+            });
 
         }
     }
