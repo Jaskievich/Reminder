@@ -2,6 +2,7 @@ package com.example.Reminder;
 
 import android.database.Cursor;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
@@ -44,8 +45,10 @@ public class SettingsActivity extends AppCompatActivity {
             while (cursor.moveToNext()) {
                 String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
                 list_entries.add(title);
-                String uri = cursor.getString(RingtoneManager.URI_COLUMN_INDEX);
-                list_entryValues.add(uri);
+             //   String uri = cursor.getString(RingtoneManager.URI_COLUMN_INDEX);
+                Uri notificationUri = manager.getRingtoneUri(cursor.getPosition());
+
+                list_entryValues.add(notificationUri.getEncodedPath());
                 // Do something with the title and the URI of ringtone
             }
             CharSequence[] entries =  list_entries.toArray(new CharSequence[list_entries.size()]);
@@ -63,5 +66,7 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
         }
+
+
     }
 }
