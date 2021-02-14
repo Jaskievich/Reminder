@@ -1,6 +1,8 @@
 package com.example.Reminder;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 
@@ -31,6 +34,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+
+
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -43,28 +48,40 @@ public class SettingsActivity extends AppCompatActivity {
             manager.setType(RingtoneManager.TYPE_RINGTONE);
             Cursor cursor = manager.getCursor();
             while (cursor.moveToNext()) {
+                String id = cursor.getString(RingtoneManager.ID_COLUMN_INDEX);
                 String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
                 list_entries.add(title);
-             //   String uri = cursor.getString(RingtoneManager.URI_COLUMN_INDEX);
-                Uri notificationUri = manager.getRingtoneUri(cursor.getPosition());
-
-                list_entryValues.add(notificationUri.getEncodedPath());
+                String uri = cursor.getString(RingtoneManager.URI_COLUMN_INDEX);
+                list_entryValues.add(uri + "/" + id);
                 // Do something with the title and the URI of ringtone
             }
             CharSequence[] entries =  list_entries.toArray(new CharSequence[list_entries.size()]);
             CharSequence[] entryValues =  list_entryValues.toArray(new CharSequence[list_entryValues.size()]);
             listPreference.setEntries(entries);
             listPreference.setEntryValues(entryValues);
+            listPreference.setSummary(GetNameRington());
+//            listPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//                @Override
+//                public boolean onPreferenceClick(Preference preference) {
+//
+//                    listPreference.setSummary(preference.getTitle());
+//                    return false;
+//                }
+//            });
 
-            listPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
+        }
 
-                    listPreference.setSummary(preference.getTitle());
-                    return false;
-                }
-            });
+        private String GetNameRington(){
 
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String alarmUriStr = sp.getString("ringtone_preference_1", null);
+            Uri  alarmUri = null;
+            if( alarmUriStr == null ) {
+                alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            }
+            else alarmUri = Uri.parse(alarmUriStr);
+            Ringtone ringtone  =  RingtoneManager.getRingtone(getContext(), alarmUri);
+            return ringtone.getTitle(getContext());
         }
 
 
