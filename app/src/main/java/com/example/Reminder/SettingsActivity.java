@@ -60,15 +60,17 @@ public class SettingsActivity extends AppCompatActivity {
             listPreference.setEntries(entries);
             listPreference.setEntryValues(entryValues);
             listPreference.setSummary(GetNameRington());
-//            listPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-//                @Override
-//                public boolean onPreferenceClick(Preference preference) {
-//
-//                    listPreference.setSummary(preference.getTitle());
-//                    return false;
-//                }
-//            });
 
+            listPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+                    listPreference.setSummary(listPreference.getEntries()[listPreference.findIndexOfValue(
+                            (String) newValue)]);
+                    return false;
+                }
+            });
+            
         }
 
         private String GetNameRington(){
