@@ -67,10 +67,11 @@ public class SettingsActivity extends AppCompatActivity {
 
                     listPreference.setSummary(listPreference.getEntries()[listPreference.findIndexOfValue(
                             (String) newValue)]);
+                    listPreference.setValue(newValue.toString());
                     return false;
                 }
             });
-            
+
         }
 
         private String GetNameRington(){
