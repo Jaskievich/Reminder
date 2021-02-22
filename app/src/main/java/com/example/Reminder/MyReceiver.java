@@ -82,6 +82,12 @@ public class MyReceiver extends BroadcastReceiver
         }
     }
 
+    static public boolean isAlarmTask(Context context) {
+        Intent intent = new Intent(context, MyReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 1, intent, PendingIntent.FLAG_NO_CREATE);
+        return pi != null;
+    }
+
 }
 
 

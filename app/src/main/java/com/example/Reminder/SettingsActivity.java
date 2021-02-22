@@ -1,4 +1,4 @@
-package com.example.Reminder;
+ package com.example.Reminder;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;

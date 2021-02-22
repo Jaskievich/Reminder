@@ -1,13 +1,16 @@
  package com.example.Reminder;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,33 +39,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int curr_pos = 0;
     private RemindDBHelper remindDBHelper;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         remindDBHelper = new RemindDBHelper(this);
 
         lv = (ListView) findViewById(R.id.ltv);
-        Cursor cursor =  remindDBHelper.getAllTable();
-        adp = new AdapterReminder(this,cursor, true);
+        Cursor cursor = remindDBHelper.getAllTable();
+        adp = new AdapterReminder(this, cursor, true);
         lv.setAdapter(adp);
         final Button btn_add = (Button) findViewById(R.id.button_add);
         btn_add.setOnClickListener(this);
-        btn_start = (Button)findViewById(R.id.button_start);
+        btn_start = (Button) findViewById(R.id.button_start);
         btn_start.setOnClickListener(this);
-        btn_start.setEnabled(cursor.getCount() > 0);
-        btn_stop = (Button)findViewById(R.id.button_stop);
+     //   btn_start.setEnabled(cursor.getCount() > 0);
+        btn_stop = (Button) findViewById(R.id.button_stop);
         btn_stop.setOnClickListener(this);
-        btn_stop.setEnabled(cursor.getCount() > 0);
-        btn_del = (Button)findViewById(R.id.button_delete);
+    //    btn_stop.setEnabled(cursor.getCount() > 0);
+        btn_del = (Button) findViewById(R.id.button_delete);
         btn_del.setOnClickListener(this);
         btn_del.setEnabled(false);
 
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                ReminderItem item =  adp.getItem(position);
+                ReminderItem item = adp.getItem(position);
                 Intent intent = new Intent(MainActivity.this, ActivityItem.class);
                 intent.putExtra(ReminderItem.class.getSimpleName(), item);
                 startActivityForResult(intent, 1);
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 curr_pos = position;
-                if( !btn_del.isEnabled()) btn_del.setEnabled(true);
+                if (!btn_del.isEnabled()) btn_del.setEnabled(true);
             }
         });
 
@@ -82,15 +85,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 curr_pos = position;
-                if( !btn_del.isEnabled()) btn_del.setEnabled(true);
+                if (!btn_del.isEnabled()) btn_del.setEnabled(true);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                if( btn_del.isEnabled()) btn_del.setEnabled(false);
+                if (btn_del.isEnabled()) btn_del.setEnabled(false);
             }
         });
 
+        // Определить запущено ли задание
+        if(MyReceiver.isAlarmTask(this)) {
+            btn_start.setEnabled(false);
+            btn_stop.setEnabled(true);
+        }
+        else {
+            btn_start.setEnabled(cursor.getCount() > 0);
+            btn_stop.setEnabled(false);
+        }
     }
 
     @Override
@@ -105,6 +117,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ReminderItem item = remindDBHelper.getActualFistItem();
         if( item == null ) return;
         MyReceiver.startNewAlarmTask(this, item, item.getDate());
+        btn_stop.setEnabled(true);
+        btn_start.setEnabled(false);
         Toast.makeText(this, "Сигнализация установлена "+item.getTitle(), Toast.LENGTH_SHORT).show();
     }
 
@@ -134,7 +148,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void stopAlarm(){
+
         MyReceiver.stopAlarmTask(this);
+        btn_start.setEnabled(remindDBHelper.getAllTable().getCount() > 0);
+        btn_stop.setEnabled(false);
     }
 
     @Override
