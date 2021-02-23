@@ -262,6 +262,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+        // Начать запись
         private void startRecord() throws IllegalStateException, IOException {
             releaseRecorder();
             recorder = new MediaRecorder();
@@ -273,6 +274,7 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
             recorder.start();   // Recording is now started
         }
 
+        // Остановить запись
         private boolean stopRecord()  {
             if( recorder != null){
                 try {

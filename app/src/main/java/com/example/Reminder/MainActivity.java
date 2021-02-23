@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         remindDBHelper.close();
     }
 
+    // Запустить задание будильника
     void startAlarmTask()
     {
         ReminderItem item = remindDBHelper.getActualFistItem();
