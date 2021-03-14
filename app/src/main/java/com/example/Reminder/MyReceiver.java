@@ -49,9 +49,9 @@ public class MyReceiver extends BroadcastReceiver
         // Запустить следующее задание
         RemindDBHelper remindDBHelper = new RemindDBHelper(context);
         ReminderItem item_peek = remindDBHelper.getActualFistItem();
-        if (item_peek != null ) {
+        if (item_peek != null )
             startNewAlarmTask(context, item_peek, item_peek.getDate());
-        }
+        else stopAlarmTask(context);
         remindDBHelper.close();
     }
 
@@ -70,6 +70,8 @@ public class MyReceiver extends BroadcastReceiver
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             am.setExact(AlarmManager.RTC_WAKEUP, date.getTime(), pi);
         }
+   /*     AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo( date.getTime(), pi);
+        am.setAlarmClock(alarmClockInfo, pi);*/
     }
 
     static public void stopAlarmTask(Context context)

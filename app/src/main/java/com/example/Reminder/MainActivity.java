@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class  MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button btn_start, btn_stop, btn_del;
     private  ListView lv = null;
@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         remindDBHelper = new RemindDBHelper(this);
@@ -62,9 +63,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_del.setOnClickListener(this);
         btn_del.setEnabled(false);
 
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 ReminderItem item = adp.getItem(position);
                 Intent intent = new Intent(MainActivity.this, ActivityItem.class);
                 intent.putExtra(ReminderItem.class.getSimpleName(), item);
@@ -182,7 +185,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(item.getId() > 0) remindDBHelper.updateItem(item);
         else remindDBHelper.insertItem(item);
         adp.changeCursor(remindDBHelper.getAllTable());
-        if( !btn_start.isEnabled() )  btn_start.setEnabled(true);
+        startAlarmTask(); // Запустить будильник
+    //    if( !btn_start.isEnabled() )  btn_start.setEnabled(true);
     }
 
     @Override

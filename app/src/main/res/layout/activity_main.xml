@@ -30,7 +30,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autoText="false"
             android:drawableTop="@android:drawable/ic_menu_delete"
             android:text="@string/btn_del"
             android:textSize="10sp" />
@@ -42,7 +41,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autoText="false"
             android:drawableTop="@android:drawable/ic_menu_slideshow"
             android:text="@string/start"
             android:textSize="10sp" />
@@ -53,7 +51,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autoText="false"
             android:drawableTop="@android:drawable/ic_menu_close_clear_cancel"
             android:text="@string/stop"
             android:textSize="10sp" />

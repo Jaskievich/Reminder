@@ -37,6 +37,8 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
+
+        private Ringtone ringtone = null;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -68,6 +70,11 @@ public class SettingsActivity extends AppCompatActivity {
                     listPreference.setSummary(listPreference.getEntries()[listPreference.findIndexOfValue(
                             (String) newValue)]);
                     listPreference.setValue(newValue.toString());
+                    Uri alarmUri = Uri.parse(newValue.toString());
+
+                    if(ringtone != null) ringtone.stop();
+                    ringtone = RingtoneManager.getRingtone(getContext(), alarmUri);
+                    ringtone.play();
                     return false;
                 }
             });
@@ -87,6 +94,10 @@ public class SettingsActivity extends AppCompatActivity {
             return ringtone.getTitle(getContext());
         }
 
-
+        @Override
+        public void onStop() {
+            if(ringtone != null) ringtone.stop();
+            super.onStop();
+        }
     }
 }
