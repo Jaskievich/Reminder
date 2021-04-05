@@ -15,12 +15,8 @@ import android.content.Intent;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.text.format.DateFormat;
-import android.transition.Transition;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -30,13 +26,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
+@SuppressWarnings("ALL")
 public class ActivityItem extends AppCompatActivity implements View.OnClickListener,
         DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
@@ -232,12 +227,13 @@ public class ActivityItem extends AppCompatActivity implements View.OnClickListe
         updateLabelDate(myCalendar.getTime());
     }
 
+    @SuppressWarnings("deprecation")
     @SuppressLint("ValidFragment")
     public class MyDialogAudio extends DialogFragment
     {
         private boolean isShowDialog = false;
         private MediaRecorder recorder = null;
-        private Context context;
+        final private Context context;
 
         public String getPathName() {
             return pathName;

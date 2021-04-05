@@ -62,7 +62,7 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertItem (ReminderItem item) {
+    public void insertItem (ReminderItem item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NAME, item.getTitle());
@@ -70,10 +70,9 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DATE, item.getDate().getTime());
         contentValues.put(COLUMN_AFILE, item.getAudio_file());
         db.insert(TABLE_NAME, null, contentValues);
-        return true;
     }
 
-    public boolean updateItem (ReminderItem item) {
+    public void updateItem (ReminderItem item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NAME, item.getTitle());
@@ -81,7 +80,6 @@ public class RemindDBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_DATE, item.getDate().getTime());
         contentValues.put(COLUMN_AFILE, item.getAudio_file());
         db.update(TABLE_NAME, contentValues, "_id = ? ", new String[] { Integer.toString(item.getId()) } );
-        return true;
     }
 
      /*
@@ -104,8 +102,7 @@ public class RemindDBHelper extends SQLiteOpenHelper {
     */
     public Cursor getAllTable() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.query(TABLE_NAME,null,null,null,null,null, null );
-        return res;
+        return db.query(TABLE_NAME,null,null,null,null,null, null );
     }
 
     public ArrayList<ReminderItem> getAllTableSort() {

@@ -4,7 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,7 +33,6 @@ import java.util.Locale;
 public class  MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button btn_start, btn_stop, btn_del;
-    private  ListView lv = null;
     private AdapterReminder adp;
     private int curr_pos = 0;
     private RemindDBHelper remindDBHelper;
@@ -47,7 +45,7 @@ public class  MainActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_main);
         remindDBHelper = new RemindDBHelper(this);
 
-        lv = (ListView) findViewById(R.id.ltv);
+        ListView lv = (ListView) findViewById(R.id.ltv);
         Cursor cursor = remindDBHelper.getAllTable();
         adp = new AdapterReminder(this, cursor, true);
         lv.setAdapter(adp);
@@ -221,11 +219,11 @@ public class  MainActivity extends AppCompatActivity implements View.OnClickList
         return super.onOptionsItemSelected(item);
     }
 
-    class AdapterReminder extends CursorAdapter
+    static class AdapterReminder extends CursorAdapter
     {
-        String myFormat = "MM/dd/yy HH:mm"; //In which you need put here
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
-        Date date = new Date();
+        final String myFormat = "MM/dd/yy HH:mm"; //In which you need put here
+        final SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.getDefault());
+        final Date date = new Date();
 
         public AdapterReminder(Context context, Cursor c, boolean flags) {
             super(context, c, flags);
@@ -250,12 +248,10 @@ public class  MainActivity extends AppCompatActivity implements View.OnClickList
             tvTitle.setText( cursor.getString( cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_NAME) ) );
             long tm = cursor.getLong(cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_DATE));
             Date dt = new Date(tm);
-            if(dt != null) {
-                ((TextView) view.findViewById(R.id.text_date)).setText(sdf.format(dt));
-                ImageView imageView = (ImageView) view.findViewById(R.id.imageView_2);
-                if(date.getTime() < dt.getTime()) imageView.setImageResource(android.R.drawable.star_big_on);
-                else imageView.setImageResource(android.R.drawable.star_big_off);
-            }
+            ((TextView) view.findViewById(R.id.text_date)).setText(sdf.format(dt));
+            ImageView imageView = (ImageView) view.findViewById(R.id.imageView_2);
+            if(date.getTime() < dt.getTime()) imageView.setImageResource(android.R.drawable.star_big_on);
+            else imageView.setImageResource(android.R.drawable.star_big_off);
             ImageView imageViewAudio = (ImageView) view.findViewById(R.id.imageView_1);
             String audi_file = cursor.getString( cursor.getColumnIndexOrThrow(RemindDBHelper.COLUMN_AFILE) );
             if( audi_file != null && !audi_file.isEmpty()){
