@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @SuppressWarnings("ALL")
-public class ActivityItem extends AppCompatActivity implements View.OnClickListener,
+public class  ActivityItem extends AppCompatActivity implements View.OnClickListener,
         DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private EditText editTitle, editDescript, editDate, editTime;

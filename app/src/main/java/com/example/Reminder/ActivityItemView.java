@@ -11,10 +11,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -22,6 +26,9 @@ public class ActivityItemView extends AppCompatActivity {
 
     private Ringtone ringtone = null;
     private MediaPlayer mediaPlayer = null;
+    private ReminderItem item = null;
+    private Button btn_postpone ;
+    private int postpone_val = 10;
 
     private void makeSoundDefault() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
@@ -45,7 +52,7 @@ public class ActivityItemView extends AppCompatActivity {
 
         Bundle arguments = getIntent().getExtras();
         if (arguments != null) {
-            ReminderItem item = (ReminderItem) arguments.getSerializable(ReminderItem.class.getSimpleName());
+            item = (ReminderItem) arguments.getSerializable(ReminderItem.class.getSimpleName());
             if (item != null) {
                 text_title.setText(item.getTitle());
                 updateLabelDate(item.getDate());
@@ -60,6 +67,51 @@ public class ActivityItemView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
+            }
+        });
+        String[] time_interval = { "10 мин", "20 мин", "30 мин", "60 мин"};
+        final Spinner spinner = (Spinner) findViewById(R.id.spinner2);
+        
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, time_interval);
+        // Определяем разметку для использования при выборе элемента
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Применяем адаптер к элементу spinner
+        spinner.setAdapter(adapter);
+
+        AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                // Получаем выбранный объект
+                String item = (String)parent.getItemAtPosition(position);
+                btn_postpone.setText("Отложить на "+ item);
+                String arr[] = item.split(" ");
+                postpone_val = Integer.parseInt(arr[0]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+        spinner.setOnItemSelectedListener(itemSelectedListener);
+
+        btn_postpone = (Button) findViewById(R.id.button_postp);
+        btn_postpone.setText("Отложить на "+ postpone_val + " мин.");
+        btn_postpone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if( item != null){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.MINUTE, postpone_val);
+                    item.setDate(calendar.getTime());
+                    RemindDBHelper remindDBHelper = new RemindDBHelper(ActivityItemView.this);
+                    remindDBHelper.updateItem(item);
+
+                    ReminderItem item_actual = remindDBHelper.getActualFistItem();
+                    if( item_actual != null )
+                        MyReceiver.startNewAlarmTask(ActivityItemView.this, item_actual, item_actual.getDate());
+                    finish();
+                }
             }
         });
     }

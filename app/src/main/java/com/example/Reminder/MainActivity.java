@@ -346,7 +346,7 @@ public class  MainActivity extends AppCompatActivity implements View.OnClickList
 //        }
 //        try {
 //            if (fos != null) fos.close();
-//        } catch (IOException e) {
+//         } catch (IOException e) {
 //            e.printStackTrace();
 //        }
 //    }
@@ -388,8 +388,7 @@ public class  MainActivity extends AppCompatActivity implements View.OnClickList
 //    }
 //
 //    private void DeleteItem() {
-//
-//        AlertDialog.Builder build = new AlertDialog.Builder(this);
+ //        AlertDialog.Builder build = new AlertDialog.Builder(this);
 //        build.setMessage(R.string.quest_del).setCancelable(false)
 //        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
 //                {
