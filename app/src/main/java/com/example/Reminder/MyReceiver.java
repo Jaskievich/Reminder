@@ -22,7 +22,6 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class MyReceiver extends BroadcastReceiver
 {
-    public static final String TAG_NOTIFICATION = "NOTIFICATION_MESSAGE";
     public static final String CHANNEL_ID = "channel_1111";
     public static final int NOTIFICATION_ID = 111111;
     @Override
@@ -143,38 +142,19 @@ public class MyReceiver extends BroadcastReceiver
 //                mBuilder.build());
 //    }
 
-    public static void startNotification(Context context, int notificationID, ReminderItem item)
-    {
-        NotificationManager mNotificationManager =
-                (NotificationManager)
-                        context.getSystemService(Context.NOTIFICATION_SERVICE);
+    public static void startNotification(Context context, int notificationID, ReminderItem item) {
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //Create GPSNotification builder
         NotificationCompat.Builder mBuilder;
 
-        mBuilder = new NotificationCompat.Builder(context)
+        mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(item.getTitle())
                 .setContentText(item.getDescription())
-                .setColor(context.getResources().getColor(R.color.colorPrimaryDark))
-                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID,
-                    "Activity Opening Notification",
-                    NotificationManager.IMPORTANCE_HIGH);
-            mChannel.enableLights(true);
-            mChannel.enableVibration(true);
-            mChannel.setDescription("Activity opening notification");
+        mNotificationManager.notify( notificationID, mBuilder.build());
 
-            mBuilder.setChannelId(CHANNEL_ID);
-
-            Objects.requireNonNull(mNotificationManager).createNotificationChannel(mChannel);
-        }
-
-        Objects.requireNonNull(mNotificationManager).notify(TAG_NOTIFICATION,notificationID,
-                mBuilder.build());
     }
 
 }
