@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -151,7 +152,8 @@ public class MyReceiver extends BroadcastReceiver
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(item.getTitle())
                 .setContentText(item.getDescription())
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM));
 
         mNotificationManager.notify( notificationID, mBuilder.build());
 
